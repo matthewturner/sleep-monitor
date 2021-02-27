@@ -1,5 +1,4 @@
 #include <Arduino.h>
-// #include "main.h"
 
 #define SOUND_DETECTED LOW
 #define SAMPLE_BUFFER_COUNT 5000
@@ -9,6 +8,7 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(7, INPUT);
+  Serial.println("Arrgh!!!!!!");
 }
 
 unsigned long lastSampleTime = 0;
@@ -66,6 +66,8 @@ bool soundDetected()
 
 void loop()
 {
+  Serial.println("Arrgh!!!!!!");
+
   lastSampleTime = millis();
   Serial.println(counter);
   if (soundDetected())
