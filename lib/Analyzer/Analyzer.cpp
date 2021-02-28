@@ -1,10 +1,5 @@
 #include "Analyzer.h"
 
-// Analyzer::Analyzer(HardwareSerial *stream)
-// {
-//     _stream = stream;
-// }
-
 Analyzer::Analyzer()
 {
 }
@@ -13,63 +8,53 @@ void Analyzer::recordSilence()
 {
     _samples[_counter] = 0;
     _counter++;
-    analyzeIfRequired();
 }
 
 void Analyzer::recordSound(unsigned long time)
 {
     _samples[_counter] = time;
     _counter++;
-    analyzeIfRequired();
 }
 
-void Analyzer::analyzeIfRequired()
+bool Analyzer::analysisRequired()
 {
-    if (_counter >= SAMPLE_BUFFER_COUNT)
+    return (_counter >= SAMPLE_BUFFER_COUNT);
+}
+
+bool Analyzer::rhythmicSoundsDetected()
+{
+    int soundCounter = countRhythmicSounds();
+    if (soundCounter >= 5)
     {
-        _counter = 0;
-        analyze();
+        return true;
     }
+
+    return false;
 }
 
-bool Analyzer::analyze()
+int Analyzer::countRhythmicSounds()
 {
-    return false;
-    // _stream->println("Analyzing...");
+    unsigned long lastSound = 0;
+    int soundCounter = 0;
+    for (int i = 0; i < _counter; i++)
+    {
+        unsigned long currentSound = _samples[i];
+        if (currentSound == 0)
+        {
+            continue;
+        }
 
-    // uint64_t soundStart = 0;
-    // uint64_t soundEnd = 0;
-    // uint64_t lastSound = 0;
-    // bool withinSound = false;
+        if (lastSound == 0 || currentSound - lastSound >= CONTIGUOUS_SILENCE_THRESHOLD)
+        {
+            soundCounter++;
+        }
+        lastSound = currentSound;
+    }
 
-    // int silentSampleCounter = 0;
-    // for (int i = 0; i < SAMPLE_BUFFER_COUNT; i++)
-    // {
-    //     if (_samples[i] == 0)
-    //     {
-    //         silentSampleCounter++;
-    //         continue;
-    //     }
+    return soundCounter;
+}
 
-    //     uint64_t currentSound = _samples[i];
-    //     uint64_t potentialSilence = currentSound - lastSound;
-
-    //     if (potentialSilence >= CONTIGUOUS_SILENCE_THRESHOLD)
-    //     {
-    //         if (withinSound)
-    //         {
-    //             soundEnd = lastSound;
-    //             withinSound = false;
-    //             _stream->print("Sound detected (duration: ");
-    //             //_stream->print((uint64_t)(soundEnd - soundStart));
-    //             _stream->println("ms)");
-    //         }
-    //         else
-    //         {
-    //             soundStart = lastSound;
-    //             soundEnd = 0;
-    //             withinSound = true;
-    //         }
-    //     }
-    // }
+void Analyzer::clear()
+{
+    _counter = 0;
 }
