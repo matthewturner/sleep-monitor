@@ -2,7 +2,7 @@
 
 #define SOUND_DETECTED LOW
 
-Analyzer analyzer(&Serial);
+Analyzer analyzer;
 
 void setup()
 {

@@ -12,7 +12,7 @@ public:
     // Analyzer(HardwareSerial *stream);
     Analyzer();
 
-    void recordSound(uint64_t time);
+    void recordSound(unsigned long time);
 
     void recordSilence();
 
@@ -22,8 +22,8 @@ public:
 
 private:
     //HardwareSerial *_stream;
-    uint64_t _lastSampleTime = 0;
-    uint64_t _samples[SAMPLE_BUFFER_COUNT];
+    unsigned long _lastSampleTime = 0;
+    unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;
     bool _rhythmicSoundDetected = false;
 };

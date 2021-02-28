@@ -10,6 +10,7 @@
             "includePath": [
                 "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/include",
                 "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/src",
+                "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/lib/Analyzer",
                 "C:/Users/matt/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/matt/.platformio/packages/framework-arduino-avr/variants/standard",
                 "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -25,6 +26,7 @@
                 "path": [
                     "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/include",
                     "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/src",
+                    "c:/Users/matt/Documents/PlatformIO/Projects/Sleep Monitor/lib/Analyzer",
                     "C:/Users/matt/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/matt/.platformio/packages/framework-arduino-avr/variants/standard",
                     "C:/Users/matt/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",

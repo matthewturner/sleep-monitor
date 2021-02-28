@@ -16,7 +16,7 @@ void Analyzer::recordSilence()
     analyzeIfRequired();
 }
 
-void Analyzer::recordSound(uint64_t time)
+void Analyzer::recordSound(unsigned long time)
 {
     _samples[_counter] = time;
     _counter++;
