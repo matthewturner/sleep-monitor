@@ -3,6 +3,7 @@
 
 #define SAMPLE_BUFFER_COUNT 2000
 #define CONTIGUOUS_SILENCE_THRESHOLD 300
+#define DEFAULT_RHYTHM_THRESHOLD 5
 
 class Analyzer
 {
@@ -16,16 +17,18 @@ public:
     bool analysisRequired();
 
     int countRhythmicSounds();
+    int durationRhythmicSounds();
 
     bool rhythmicSoundsDetected();
+
+    void setRhythmThreshold(short newThreshold);
 
     void clear();
 
 private:
-    unsigned long _lastSampleTime = 0;
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;
-    bool _rhythmicSoundDetected = false;
+    short _rhythmThreshold = DEFAULT_RHYTHM_THRESHOLD;
 };
 
 #endif
