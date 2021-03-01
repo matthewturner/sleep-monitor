@@ -5,6 +5,15 @@
 #define CONTIGUOUS_SILENCE_THRESHOLD 300
 #define DEFAULT_RHYTHM_THRESHOLD 5
 
+struct summary
+{
+    short Count;
+    short TotalDuration;
+    short AverageDuration;
+};
+
+typedef struct summary Summary;
+
 class Analyzer
 {
 public:
@@ -18,6 +27,7 @@ public:
 
     int countRhythmicSounds();
     int durationRhythmicSounds();
+    void analyze(Summary* summary);
 
     bool rhythmicSoundsDetected();
 

@@ -2,10 +2,14 @@
 #include "Analyzer.h"
 
 Analyzer analyzer;
+Summary summary;
 
 void setUp(void)
 {
     analyzer.clear();
+    summary.AverageDuration = 0;
+    summary.Count = 0;
+    summary.TotalDuration = 0;
 }
 
 void tearDown(void)
