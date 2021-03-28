@@ -1,32 +1,34 @@
 #include <unity.h>
-#include "Trigger.h"
+#include "SoftwareTrigger.h"
 
-Trigger trigger;
+SoftwareTrigger trigger;
 
 void setUp(void)
 {
     trigger.setLastTime(0);
+    trigger.setReading(true);
 }
 
 void test_not_triggered_when_false(void)
 {
-    TEST_ASSERT_FALSE(trigger.triggered(false, 10));
+    trigger.setReading(false);
+    TEST_ASSERT_FALSE(trigger.triggered(10));
 }
 
 void test_not_triggered_within_threshold(void)
 {
-    TEST_ASSERT_FALSE(trigger.triggered(true, 10));
+    TEST_ASSERT_FALSE(trigger.triggered(10));
 }
 
 void test_triggered_outside_threshold(void)
 {
-    TEST_ASSERT_TRUE(trigger.triggered(true, 2010));
+    TEST_ASSERT_TRUE(trigger.triggered(2010));
 }
 
 void test_not_triggered_after_first_trigger(void)
 {
-    trigger.triggered(true, 2010);
-    TEST_ASSERT_FALSE(trigger.triggered(true, 2030));
+    trigger.triggered(2010);
+    TEST_ASSERT_FALSE(trigger.triggered(2030));
 }
 
 int main(int argc, char **argv)

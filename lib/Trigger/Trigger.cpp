@@ -4,9 +4,9 @@ Trigger::Trigger()
 {
 }
 
-bool Trigger::triggered(bool reading, unsigned long currentTime)
+bool Trigger::triggered(unsigned long currentTime)
 {
-    if (!reading)
+    if (!read())
     {
         return false;
     }

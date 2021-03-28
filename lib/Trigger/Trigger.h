@@ -8,9 +8,12 @@ class Trigger
 public:
     Trigger();
 
-    bool triggered(bool reading, unsigned long currentTime);
+    bool triggered(unsigned long currentTime);
 
     void setLastTime(unsigned long currentTime);
+
+protected:
+    virtual bool read() = 0;
 
 private:
     unsigned long _lastTime;
