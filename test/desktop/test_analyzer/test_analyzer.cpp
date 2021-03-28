@@ -12,10 +12,6 @@ void setUp(void)
     summary.TotalDuration = 0;
 }
 
-void tearDown(void)
-{
-}
-
 void test_no_rhythmic_sound_detected_empty(void)
 {
     TEST_ASSERT_FALSE(analyzer.rhythmicSoundsDetected());

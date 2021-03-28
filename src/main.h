@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <AccelStepper.h>
 #include "Analyzer.h"
+#include "Trigger.h"
 
 bool soundDetected();
 

@@ -15,8 +15,9 @@
 #define DEFLATING -1
 #define INFLATING 1
 
-Analyzer analyzer;
-AccelStepper stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
+Analyzer _analyzer;
+Trigger _trigger;
+AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
 short _action = DEFLATE;
 
 void setup()
@@ -29,7 +30,7 @@ void setup()
   pinMode(MICROPHONE_PIN, INPUT);
   pinMode(TRIGGER_PIN, INPUT_PULLUP);
 
-  stepper.setMaxSpeed(1000);
+  _stepper.setMaxSpeed(1000);
 }
 
 void loop()
@@ -52,26 +53,21 @@ void loop()
     }
   }
 
-  if (triggered())
+  if (_trigger.triggered(triggered(), lastSampleTime))
   {
     trigger();
   }
-  
+
   continueFlating();
 
   if (soundDetected())
   {
-    analyzer.recordSound(lastSampleTime);
+    _analyzer.recordSound(lastSampleTime);
   }
   else
   {
-    analyzer.recordSilence();
+    _analyzer.recordSilence();
   }
-}
-
-bool triggered()
-{
-  return digitalRead(TRIGGER_PIN) == LOW;
 }
 
 bool fullyDeflated()
@@ -97,7 +93,7 @@ bool deflating()
 void startFlation(short newAction)
 {
   _action = newAction;
-  stepper.setSpeed(_action * 500);
+  _stepper.setSpeed(_action * 500);
   digitalWrite(STEP_ENABLE_PIN, LOW);
 }
 
@@ -109,6 +105,11 @@ void stopFlation()
 bool stopped()
 {
   return (digitalRead(STEP_ENABLE_PIN) == HIGH);
+}
+
+bool triggered()
+{
+  return (digitalRead(TRIGGER_PIN) == LOW);
 }
 
 void trigger()
@@ -136,7 +137,7 @@ void trigger()
 
 void continueFlating()
 {
-  stepper.runSpeed();
+  _stepper.runSpeed();
 }
 
 bool reached(short end)
