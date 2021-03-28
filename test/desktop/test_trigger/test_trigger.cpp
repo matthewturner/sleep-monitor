@@ -35,6 +35,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_not_triggered_when_false);
     RUN_TEST(test_not_triggered_within_threshold);
     RUN_TEST(test_triggered_outside_threshold);
+    RUN_TEST(test_not_triggered_after_first_trigger);
     UNITY_END();
 
     return 0;
