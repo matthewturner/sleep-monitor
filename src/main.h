@@ -6,8 +6,33 @@
 #include "Analyzer.h"
 #include "Trigger.h"
 
-bool soundDetected();
+#define SOUND_DETECTED LOW
+#define END_STOP_TOP_PIN 12
+#define END_STOP_BOTTOM_PIN 11
+#define STEP_INTERFACE_TYPE 1
+#define STEP_DIRECTION_PIN 7
+#define STEP_STEP_PIN 6
+#define STEP_ENABLE_PIN 5
+#define MICROPHONE_PIN 3
+#define TRIGGER_PIN 2
+
+#define DEFLATING -1
+#define INFLATING 1
 
 void analyze();
+
+void trigger();
+
+bool fullyInflated();
+
+bool fullyDeflated();
+
+void continueFlating();
+
+void stopFlation();
+
+bool deflating();
+
+bool inflating();
 
 #endif
