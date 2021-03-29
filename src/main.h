@@ -5,6 +5,9 @@
 #include <AccelStepper.h>
 #include "Analyzer.h"
 #include "Trigger.h"
+#include "HardwareEndStop.h"
+#include "HardwareTrigger.h"
+#include "Pillow.h"
 
 #define SOUND_DETECTED LOW
 #define END_STOP_TOP_PIN 12
@@ -15,9 +18,6 @@
 #define STEP_ENABLE_PIN 5
 #define MICROPHONE_PIN 3
 #define TRIGGER_PIN 2
-
-#define DEFLATING -1
-#define INFLATING 1
 
 void analyze();
 

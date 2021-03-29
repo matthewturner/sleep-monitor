@@ -1,12 +1,11 @@
 #include "main.h"
-#include "HardwareTrigger.h"
-#include "HardwareEndStop.h"
 
+AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
 Analyzer _analyzer;
 HardwareTrigger _trigger(TRIGGER_PIN);
 HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
-AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
+Pillow _pillow(&_endStopTop, &_endStopBottom);
 short _action = DEFLATING;
 
 void setup()
@@ -21,19 +20,19 @@ void loop()
 {
   uint64_t lastSampleTime = millis();
 
-  if (fullyDeflated())
+  if (_pillow.deflated())
   {
-    if (deflating())
+    if (_pillow.deflating())
     {
-      stopFlation();
+      _pillow.stop();
     }
   }
 
-  if (fullyInflated())
+  if (_pillow.inflated())
   {
-    if (inflating())
+    if (_pillow.inflating())
     {
-      stopFlation();
+     _pillow.stop();
     }
   }
 
@@ -42,70 +41,28 @@ void loop()
     trigger();
   }
 
-  continueFlating();
-}
-
-bool fullyDeflated()
-{
-  return _endStopTop.reached();
-}
-
-bool fullyInflated()
-{
-  return _endStopBottom.reached();
-}
-
-bool inflating()
-{
-  return (_action == INFLATING);
-}
-
-bool deflating()
-{
-  return (_action == DEFLATING);
-}
-
-void startFlation(short newAction)
-{
-  _action = newAction;
-  _stepper.setSpeed(_action * 500);
-  digitalWrite(STEP_ENABLE_PIN, LOW);
-}
-
-void stopFlation()
-{
-  digitalWrite(STEP_ENABLE_PIN, HIGH);
-}
-
-bool stopped()
-{
-  return (digitalRead(STEP_ENABLE_PIN) == HIGH);
+  _pillow.proceed();
 }
 
 void trigger()
 {
-  if (fullyDeflated())
+  if (_pillow.deflated())
   {
-    startFlation(INFLATING);
+    _pillow.start(INFLATING);
     return;
   }
 
-  if (fullyInflated())
+  if (_pillow.inflated())
   {
-    startFlation(DEFLATING);
+    _pillow.start(DEFLATING);
     return;
   }
 
-  if (stopped())
+  if (_pillow.stopped())
   {
-    startFlation(_action * -1);
+    _pillow.start(_action * -1);
     return;
   }
 
-  stopFlation();
-}
-
-void continueFlating()
-{
-  _stepper.runSpeed();
+  _pillow.stop();
 }
