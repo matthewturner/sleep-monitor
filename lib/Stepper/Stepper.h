@@ -6,11 +6,12 @@ class Stepper
 public:
     Stepper();
 
-    virtual bool setSpeed(int speed) = 0;
-    virtual bool run() = 0;
+    virtual void setSpeed(int speed) = 0;
+    virtual void run() = 0;
 
     virtual void enable() = 0;
     virtual void disable() = 0;
+    virtual bool enabled() = 0;
 };
 
 #endif

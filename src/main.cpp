@@ -5,14 +5,14 @@ Analyzer _analyzer;
 HardwareTrigger _trigger(TRIGGER_PIN);
 HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
-Pillow _pillow(&_endStopTop, &_endStopBottom);
-short _action = DEFLATING;
+HardwareStepper _stepperAdapter(&_stepper);
+Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(STEP_ENABLE_PIN, OUTPUT);
 
+  _stepper.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
 }
 
@@ -22,7 +22,7 @@ void loop()
 
   if (_pillow.deflated())
   {
-    if (_pillow.deflating())
+    if (_pillow.intention() == DEFLATING)
     {
       _pillow.stop();
     }
@@ -30,9 +30,9 @@ void loop()
 
   if (_pillow.inflated())
   {
-    if (_pillow.inflating())
+    if (_pillow.intention() == INFLATING)
     {
-     _pillow.stop();
+      _pillow.stop();
     }
   }
 
@@ -60,7 +60,7 @@ void trigger()
 
   if (_pillow.stopped())
   {
-    _pillow.start(_action * -1);
+    _pillow.start(_pillow.intention() * -1);
     return;
   }
 

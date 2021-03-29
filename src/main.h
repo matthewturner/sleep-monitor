@@ -5,8 +5,10 @@
 #include <AccelStepper.h>
 #include "Analyzer.h"
 #include "Trigger.h"
+#include "Stepper.h"
 #include "HardwareEndStop.h"
 #include "HardwareTrigger.h"
+#include "HardwareStepper.h"
 #include "Pillow.h"
 
 #define SOUND_DETECTED LOW
@@ -19,20 +21,6 @@
 #define MICROPHONE_PIN 3
 #define TRIGGER_PIN 2
 
-void analyze();
-
 void trigger();
-
-bool fullyInflated();
-
-bool fullyDeflated();
-
-void continueFlating();
-
-void stopFlation();
-
-bool deflating();
-
-bool inflating();
 
 #endif

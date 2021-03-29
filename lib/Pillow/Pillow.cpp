@@ -1,6 +1,6 @@
 #include "Pillow.h"
 
-Pillow::Pillow(EndStop *top, EndStop *bottom)
+Pillow::Pillow(EndStop *top, EndStop *bottom, Stepper *stepper)
 {
     _endStopTop = top;
     _endStopBottom = bottom;
@@ -16,35 +16,34 @@ bool Pillow::inflated()
     return _endStopBottom->reached();
 }
 
-bool Pillow::inflating()
+short Pillow::intention()
 {
-    return (_action == INFLATING);
-}
-
-bool Pillow::deflating()
-{
-    return (_action == DEFLATING);
+    return _action;
 }
 
 void Pillow::start(short newAction)
 {
     _action = newAction;
-    //_stepper.setSpeed(_action * 500);
-    //digitalWrite(STEP_ENABLE_PIN, LOW);
+    _stepper->setSpeed(_action * 500);
+    _stepper->enable();
 }
 
 void Pillow::stop()
 {
-    //digitalWrite(STEP_ENABLE_PIN, HIGH);
+    _stepper->disable();
 }
 
 bool Pillow::stopped()
 {
-    //return (digitalRead(STEP_ENABLE_PIN) == HIGH);
-    return false;
+    return !_stepper->enabled();
+}
+
+bool Pillow::running()
+{
+    return _stepper->enabled();
 }
 
 void Pillow::proceed()
 {
-    //_stepper.runSpeed();
+    _stepper->run();
 }
