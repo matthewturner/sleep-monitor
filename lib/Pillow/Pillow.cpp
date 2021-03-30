@@ -4,6 +4,7 @@ Pillow::Pillow(EndStop *top, EndStop *bottom, Stepper *stepper)
 {
     _endStopTop = top;
     _endStopBottom = bottom;
+    _stepper = stepper;
 }
 
 bool Pillow::deflated()

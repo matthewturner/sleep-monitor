@@ -1,4 +1,5 @@
 #include <unity.h>
+#include "Stepper.h"
 #include "SoftwareEndStop.h"
 #include "SoftwareStepper.h"
 #include "Pillow.h"
@@ -55,6 +56,7 @@ void test_stop_disables_stepper(void)
 
 void test_check_does_not_disable(void)
 {
+    pillow.start(INFLATING);
     pillow.check();
     TEST_ASSERT_TRUE(stepper.enabled());
 }
@@ -88,7 +90,7 @@ void test_check_does_not_disable_when_inflated_but_deflating(void)
     pillow.start(DEFLATING);
     endStopBottom.setReading(true);
     pillow.check();
-    TEST_ASSERT_FALSE(stepper.enabled());
+    TEST_ASSERT_TRUE(stepper.enabled());
 }
 
 void test_proceed_calls_run(void)

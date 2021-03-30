@@ -6,8 +6,6 @@
 class SoftwareStepper : public Stepper
 {
 public:
-    SoftwareStepper();
-
     void setSpeed(int speed) override;
     int currentSpeed();
 
