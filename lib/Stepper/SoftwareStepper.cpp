@@ -12,6 +12,17 @@ int SoftwareStepper::currentSpeed()
 
 void SoftwareStepper::run()
 {
+    _wasRun = true;
+}
+
+bool SoftwareStepper::wasRun()
+{
+    return _wasRun;
+}
+
+void SoftwareStepper::reset()
+{
+    _wasRun = false;
 }
 
 void SoftwareStepper::enable()

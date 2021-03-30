@@ -13,6 +13,9 @@ public:
 
     void run() override;
 
+    bool wasRun();
+    void reset();
+
     void enable() override;
     void disable() override;
     bool enabled() override;
@@ -20,6 +23,7 @@ public:
 private:
     bool _enabled;
     int _speed;
+    bool _wasRun;
 };
 
 #endif
