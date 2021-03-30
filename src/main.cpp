@@ -20,49 +20,12 @@ void loop()
 {
   uint64_t lastSampleTime = millis();
 
-  if (_pillow.deflated())
-  {
-    if (_pillow.intention() == DEFLATING)
-    {
-      _pillow.stop();
-    }
-  }
-
-  if (_pillow.inflated())
-  {
-    if (_pillow.intention() == INFLATING)
-    {
-      _pillow.stop();
-    }
-  }
+  _pillow.check();
 
   if (_trigger.triggered(lastSampleTime))
   {
-    trigger();
+    _pillow.reverse();
   }
 
   _pillow.proceed();
-}
-
-void trigger()
-{
-  if (_pillow.deflated())
-  {
-    _pillow.start(INFLATING);
-    return;
-  }
-
-  if (_pillow.inflated())
-  {
-    _pillow.start(DEFLATING);
-    return;
-  }
-
-  if (_pillow.stopped())
-  {
-    _pillow.start(_pillow.intention() * -1);
-    return;
-  }
-
-  _pillow.stop();
 }

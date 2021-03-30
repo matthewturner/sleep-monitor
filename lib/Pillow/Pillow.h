@@ -24,6 +24,9 @@ public:
     bool running();
     void proceed();
 
+    void check();
+    void reverse();
+
 private:
     EndStop *_endStopTop;
     EndStop *_endStopBottom;

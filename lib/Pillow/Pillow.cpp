@@ -47,3 +47,45 @@ void Pillow::proceed()
 {
     _stepper->run();
 }
+
+void Pillow::check()
+{
+    if (deflated())
+    {
+        if (intention() == DEFLATING)
+        {
+            stop();
+        }
+    }
+
+    if (inflated())
+    {
+        if (intention() == INFLATING)
+        {
+            stop();
+        }
+    }
+}
+
+void Pillow::reverse()
+{
+    if (stopped())
+    {
+        start(intention() * -1);
+        return;
+    }
+
+    if (deflated())
+    {
+        start(INFLATING);
+        return;
+    }
+
+    if (inflated())
+    {
+        start(DEFLATING);
+        return;
+    }
+
+    stop();
+}

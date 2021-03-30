@@ -21,6 +21,4 @@
 #define MICROPHONE_PIN 3
 #define TRIGGER_PIN 2
 
-void trigger();
-
 #endif
