@@ -9,7 +9,19 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmThreshold = newThreshold;
 }
 
-void Analyzer::recordSilence()
+void Analyzer::record(bool sound, unsigned long time)
+{
+    if (sound)
+    {
+        recordSound(time);
+    }
+    else
+    {
+        recordSilence(time);
+    }
+}
+
+void Analyzer::recordSilence(unsigned long time)
 {
     _samples[_counter] = 0;
     _counter++;
@@ -23,35 +35,22 @@ void Analyzer::recordSound(unsigned long time)
 
 bool Analyzer::analysisRequired()
 {
-    return (_counter >= SAMPLE_BUFFER_COUNT);
-}
-
-bool Analyzer::rhythmicSoundsDetected()
-{
-    int soundCounter = countRhythmicSounds();
-    if (soundCounter >= 5)
+    if (_counter <= 1)
+    {
+        return false;
+    }
+    if (_counter >= SAMPLE_BUFFER_COUNT)
     {
         return true;
     }
-
+    if ((_samples[_counter - 1] - _samples[0]) > DEFAULT_DURATION_THRESHOLD)
+    {
+        return true;
+    }
     return false;
 }
 
-int Analyzer::durationRhythmicSounds()
-{
-    Summary summary;
-    analyze(&summary);
-    return summary.TotalDuration;
-}
-
-int Analyzer::countRhythmicSounds()
-{
-    Summary summary;
-    analyze(&summary);
-    return summary.Count;
-}
-
-void Analyzer::analyze(Summary* summary)
+void Analyzer::analyze(Summary *summary)
 {
     unsigned long lastSound = 0;
     int soundCounter = 0;
@@ -70,16 +69,17 @@ void Analyzer::analyze(Summary* summary)
         {
             soundCounter++;
         }
-        
+
         if (lastSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
         {
             totalDuration += duration;
         }
-        
+
         lastSound = currentSound;
     }
     summary->Count = soundCounter;
     summary->TotalDuration = totalDuration;
+    summary->RhythmDetected = (soundCounter >= _rhythmThreshold);
 }
 
 void Analyzer::clear()

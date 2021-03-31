@@ -2,7 +2,9 @@
 
 AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
 Analyzer _analyzer;
+Summary _summary;
 HardwareTrigger _trigger(TRIGGER_PIN);
+HardwareMicrophone _microphone(MICROPHONE_PIN);
 HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
 HardwareStepper _stepperAdapter(&_stepper);
@@ -18,13 +20,25 @@ void setup()
 
 void loop()
 {
-  uint64_t lastSampleTime = millis();
+  uint64_t currentTime = millis();
 
   _pillow.check();
 
-  if (_trigger.triggered(lastSampleTime))
+  if (_trigger.triggered(currentTime))
   {
     _pillow.reverse();
+  }
+
+  _analyzer.record(_microphone.soundDetected(), currentTime);
+
+  if (_analyzer.analysisRequired())
+  {
+    _analyzer.analyze(&_summary);
+    if (_summary.RhythmDetected)
+    {
+      _pillow.start(INFLATING);
+    }
+    _analyzer.clear();
   }
 
   _pillow.proceed();

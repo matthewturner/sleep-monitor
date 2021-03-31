@@ -9,6 +9,7 @@
 #include "HardwareEndStop.h"
 #include "HardwareTrigger.h"
 #include "HardwareStepper.h"
+#include "HardwareMicrophone.h"
 #include "Pillow.h"
 
 #define SOUND_DETECTED LOW
