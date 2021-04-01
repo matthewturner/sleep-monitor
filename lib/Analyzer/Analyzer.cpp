@@ -9,33 +9,15 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmThreshold = newThreshold;
 }
 
-void Analyzer::record(bool sound, unsigned long time)
-{
-    if (sound)
-    {
-        recordSound(time);
-    }
-    else
-    {
-        recordSilence(time);
-    }
-}
-
-void Analyzer::recordSilence(unsigned long time)
-{
-    _samples[_counter] = 0;
-    _counter++;
-}
-
 void Analyzer::recordSound(unsigned long time)
 {
     _samples[_counter] = time;
     _counter++;
 }
 
-bool Analyzer::analysisRequired()
+bool Analyzer::analysisRequired(unsigned long time)
 {
-    if (_counter <= 1)
+    if (_counter == 0)
     {
         return false;
     }
@@ -43,7 +25,7 @@ bool Analyzer::analysisRequired()
     {
         return true;
     }
-    if ((_samples[_counter - 1] - _samples[0]) > DEFAULT_DURATION_THRESHOLD)
+    if ((time - _samples[0]) > DEFAULT_DURATION_THRESHOLD)
     {
         return true;
     }

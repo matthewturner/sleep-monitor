@@ -29,16 +29,20 @@ void loop()
     _pillow.reverse();
   }
 
-  _analyzer.record(_microphone.soundDetected(), currentTime);
+  if (_microphone.soundDetected())
+  {
+    _analyzer.recordSound(currentTime);
+  }
 
-  if (_analyzer.analysisRequired())
+  if (_analyzer.analysisRequired(currentTime))
   {
     _analyzer.analyze(&_summary);
+    _analyzer.clear();
+    
     if (_summary.RhythmDetected)
     {
       _pillow.start(INFLATING);
     }
-    _analyzer.clear();
   }
 
   _pillow.proceed();

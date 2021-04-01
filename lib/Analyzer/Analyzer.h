@@ -21,11 +21,9 @@ class Analyzer
 public:
     Analyzer();
 
-    void record(bool sound, unsigned long time);
     void recordSound(unsigned long time);
-    void recordSilence(unsigned long time);
 
-    bool analysisRequired();
+    bool analysisRequired(unsigned long time);
 
     void analyze(Summary *summary);
 
