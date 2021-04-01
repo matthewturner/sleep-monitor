@@ -137,6 +137,20 @@ void test_analysis_required_after_significant_break(void)
     TEST_ASSERT_TRUE(analyzer.analysisRequired(25001));
 }
 
+void test_record_silence(void)
+{
+    analyzer.record(false, 5000);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(0, summary.Count);
+}
+
+void test_record_sound(void)
+{
+    analyzer.record(true, 5000);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(1, summary.Count);
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -155,6 +169,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_analysis_required_true);
     RUN_TEST(test_analysis_required_by_record);
     RUN_TEST(test_analysis_required_after_significant_break);
+    RUN_TEST(test_record_silence);
+    RUN_TEST(test_record_sound);
     UNITY_END();
 
     return 0;

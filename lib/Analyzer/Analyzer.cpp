@@ -9,6 +9,14 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmThreshold = newThreshold;
 }
 
+void Analyzer::record(bool sound, unsigned long time)
+{
+    if (sound)
+    {
+        recordSound(time);
+    }
+}
+
 void Analyzer::recordSound(unsigned long time)
 {
     _samples[_counter] = time;

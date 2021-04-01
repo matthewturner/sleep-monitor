@@ -24,24 +24,25 @@ void loop()
 
   _pillow.check();
 
+  _analyzer.record(_microphone.soundDetected(), currentTime);
+
   if (_trigger.triggered(currentTime))
   {
     _pillow.reverse();
-  }
-
-  if (_microphone.soundDetected())
-  {
-    _analyzer.recordSound(currentTime);
+    _analyzer.clear();
   }
 
   if (_analyzer.analysisRequired(currentTime))
   {
     _analyzer.analyze(&_summary);
     _analyzer.clear();
-    
+
     if (_summary.RhythmDetected)
     {
-      _pillow.start(INFLATING);
+      if (!_pillow.inflated())
+      {
+        _pillow.start(INFLATING);
+      }
     }
   }
 
