@@ -29,6 +29,28 @@ void Pillow::start(short newAction)
     _stepper->enable();
 }
 
+bool Pillow::tryInflate()
+{
+    if (inflated())
+    {
+        return false;
+    }
+
+    start(INFLATING);
+    return true;
+}
+
+bool Pillow::tryDeflate()
+{
+    if (deflated())
+    {
+        return false;
+    }
+
+    start(DEFLATING);
+    return true;
+}
+
 void Pillow::stop()
 {
     _stepper->disable();

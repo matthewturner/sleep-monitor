@@ -16,6 +16,8 @@ void setup()
 
   _stepper.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
+
+  _pillow.tryDeflate();
 }
 
 void loop()
@@ -39,10 +41,7 @@ void loop()
 
     if (_summary.RhythmDetected)
     {
-      if (!_pillow.inflated())
-      {
-        _pillow.start(INFLATING);
-      }
+      _pillow.tryInflate();
     }
   }
 

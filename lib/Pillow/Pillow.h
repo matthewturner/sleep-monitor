@@ -17,6 +17,8 @@ public:
 
     short intention();
 
+    bool tryInflate();
+    bool tryDeflate();
     void start(short newAction);
     void stop();
     bool stopped();
