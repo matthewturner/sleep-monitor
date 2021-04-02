@@ -151,6 +151,37 @@ void test_record_sound(void)
     TEST_ASSERT_EQUAL(1, summary.Count);
 }
 
+void test_only_last_sound_is_stored_single(void)
+{
+    analyzer.recordSound(100);
+    TEST_ASSERT_EQUAL(1, analyzer.count());
+}
+
+void test_only_last_sound_is_stored_double(void)
+{
+    analyzer.recordSound(100);
+    analyzer.recordSound(200);
+    TEST_ASSERT_EQUAL(2, analyzer.count());
+}
+
+void test_only_last_sound_is_stored(void)
+{
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(250);
+    analyzer.recordSound(350);
+    TEST_ASSERT_EQUAL(2, analyzer.count());
+}
+
+void test_only_last_sound_is_stored_separated(void)
+{
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    TEST_ASSERT_EQUAL(4, analyzer.count());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -171,6 +202,10 @@ int main(int argc, char **argv)
     RUN_TEST(test_analysis_required_after_significant_break);
     RUN_TEST(test_record_silence);
     RUN_TEST(test_record_sound);
+    RUN_TEST(test_only_last_sound_is_stored_single);
+    RUN_TEST(test_only_last_sound_is_stored_double);
+    RUN_TEST(test_only_last_sound_is_stored);
+    RUN_TEST(test_only_last_sound_is_stored_separated);
     UNITY_END();
 
     return 0;

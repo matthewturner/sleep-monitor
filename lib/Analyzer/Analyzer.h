@@ -32,6 +32,8 @@ public:
 
     void clear();
 
+    short count();
+
 private:
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;

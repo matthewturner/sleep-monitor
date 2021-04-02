@@ -19,8 +19,19 @@ void Analyzer::record(bool sound, unsigned long time)
 
 void Analyzer::recordSound(unsigned long time)
 {
-    _samples[_counter] = time;
-    _counter++;
+    if (_counter <= 1)
+    {
+        _samples[_counter] = time;
+        _counter++;
+        return;
+    }
+    if (time - _samples[_counter - 2] > CONTIGUOUS_SILENCE_THRESHOLD)
+    {
+        _samples[_counter] = time;
+        _counter++;
+        return;
+    }
+    _samples[_counter - 1] = time;
 }
 
 bool Analyzer::analysisRequired(unsigned long time)
@@ -75,4 +86,9 @@ void Analyzer::analyze(Summary *summary)
 void Analyzer::clear()
 {
     _counter = 0;
+}
+
+short Analyzer::count()
+{
+    return _counter;
 }
