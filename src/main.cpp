@@ -9,6 +9,7 @@ HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
 HardwareStepper _stepperAdapter(&_stepper);
 Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
+uint64_t _lastOutput;
 
 void setup()
 {
@@ -19,6 +20,8 @@ void setup()
   _stepper.setMaxSpeed(1000);
 
   _pillow.tryDeflate();
+
+  Serial.println("Setup complete. Continuing...");
 }
 
 void loop()
@@ -32,29 +35,54 @@ void loop()
   if (_trigger.triggered(currentTime))
   {
     Serial.println("Triggered!");
-    if (digitalRead(13) == HIGH)
-    {
-      digitalWrite(13, LOW);
-    }
-    else
-    {
-      digitalWrite(13, HIGH);
-    }
     _pillow.reverse();
     _analyzer.clear();
   }
 
   if (_analyzer.analysisRequired(currentTime))
   {
+    Serial.println("Analyzing...");
     _analyzer.analyze(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)
     {
+      Serial.println("Rhythm detected");
       _pillow.tryInflate();
     }
   }
 
-  Serial.println("Proceeding...");
+  printStatus(currentTime);
   _pillow.proceed();
+}
+
+void printStatus(uint64_t currentTime)
+{
+  if ((currentTime - _lastOutput) <= 2000)
+  {
+    return;
+  }
+
+  _lastOutput = currentTime;
+
+  if (_pillow.inflated())
+  {
+    Serial.println("Inflated");
+  }
+  if (_pillow.deflated())
+  {
+    Serial.println("Deflated");
+  }
+
+  if (_pillow.running())
+  {
+    if (_pillow.intention() == INFLATING)
+    {
+      Serial.println("Inflating...");
+    }
+    else
+    {
+      Serial.println("Deflating...");
+    }
+  }
 }

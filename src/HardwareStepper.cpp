@@ -17,18 +17,19 @@ void HardwareStepper::run()
 
 void HardwareStepper::enable()
 {
-    _stepper->enableOutputs();
+    digitalWrite(_enablePin, LOW);
 }
 
 void HardwareStepper::disable()
 {
-    _stepper->disableOutputs();
+    digitalWrite(_enablePin, HIGH);
 }
 
 void HardwareStepper::setEnablePin(short pin)
 {
     _enablePin = pin;
-    _stepper->setEnablePin(pin);
+    // _stepper->setEnablePin(pin);
+    pinMode(pin, OUTPUT);
 }
 
 bool HardwareStepper::enabled()

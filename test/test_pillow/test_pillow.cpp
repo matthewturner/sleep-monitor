@@ -26,7 +26,7 @@ void test_start_sets_intention(void)
 void test_start_sets_speed(void)
 {
     pillow.start(INFLATING);
-    TEST_ASSERT_EQUAL(500, stepper.currentSpeed());
+    TEST_ASSERT_EQUAL(-500, stepper.currentSpeed());
 }
 
 void test_start_enables_stepper(void)

@@ -1,7 +1,7 @@
 #ifndef Analyzer_h
 #define Analyzer_h
 
-#define SAMPLE_BUFFER_COUNT 2000
+#define SAMPLE_BUFFER_COUNT 200
 #define CONTIGUOUS_SILENCE_THRESHOLD 300
 #define DEFAULT_RHYTHM_THRESHOLD 5
 #define DEFAULT_DURATION_THRESHOLD 20000
@@ -36,7 +36,7 @@ private:
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;
     short _rhythmThreshold = DEFAULT_RHYTHM_THRESHOLD;
-    short _durationThreshold = DEFAULT_DURATION_THRESHOLD;
+    int _durationThreshold = DEFAULT_DURATION_THRESHOLD;
 };
 
 #endif

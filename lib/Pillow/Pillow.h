@@ -4,8 +4,8 @@
 #include "EndStop.h"
 #include "Stepper.h"
 
-#define DEFLATING -1
-#define INFLATING 1
+#define DEFLATING 1
+#define INFLATING -1
 
 class Pillow
 {
