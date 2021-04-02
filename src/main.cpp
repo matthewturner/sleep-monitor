@@ -13,8 +13,9 @@ Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
 void setup()
 {
   Serial.begin(9600);
+  pinMode(13, OUTPUT);
 
-  _stepper.setEnablePin(STEP_ENABLE_PIN);
+  _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
 
   _pillow.tryDeflate();
@@ -30,6 +31,15 @@ void loop()
 
   if (_trigger.triggered(currentTime))
   {
+    Serial.println("Triggered!");
+    if (digitalRead(13) == HIGH)
+    {
+      digitalWrite(13, LOW);
+    }
+    else
+    {
+      digitalWrite(13, HIGH);
+    }
     _pillow.reverse();
     _analyzer.clear();
   }
@@ -45,5 +55,6 @@ void loop()
     }
   }
 
+  Serial.println("Proceeding...");
   _pillow.proceed();
 }

@@ -25,7 +25,13 @@ void HardwareStepper::disable()
     _stepper->disableOutputs();
 }
 
+void HardwareStepper::setEnablePin(short pin)
+{
+    _enablePin = pin;
+    _stepper->setEnablePin(pin);
+}
+
 bool HardwareStepper::enabled()
 {
-    return false;
+    return (digitalRead(_enablePin) == LOW);
 }

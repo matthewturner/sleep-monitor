@@ -15,11 +15,14 @@ public:
     void run() override;
 
     void enable() override;
+    void setEnablePin(short pin);
+
     void disable() override;
     bool enabled() override;
 
 private:
     AccelStepper *_stepper;
+    short _enablePin;
 };
 
 #endif
