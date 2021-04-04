@@ -19,7 +19,7 @@
 #define STEP_DIRECTION_PIN 7
 #define STEP_STEP_PIN 6
 #define STEP_ENABLE_PIN 5
-#define MICROPHONE_PIN 3
+#define MICROPHONE_PIN 10
 #define TRIGGER_PIN 2
 
 void printStatus(uint64_t currentTime);
