@@ -41,6 +41,10 @@ public:
     short count();
 
 private:
+    bool rhythmDetected(Summary *summary);
+    int averageSoundDuration(Summary *summary);
+    int averageSilenceDuration(Summary *summary);
+
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;
     short _rhythmSampleThreshold = DEFAULT_RHYTHM_SAMPLE_THRESHOLD;
