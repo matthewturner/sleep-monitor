@@ -9,9 +9,9 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmThreshold = newThreshold;
 }
 
-void Analyzer::setAverageDurationThreshold(short newThreshold)
+void Analyzer::setSoundDurationThreshold(short newThreshold)
 {
-    _averageDurationThreshold = newThreshold;
+    _soundDurationThreshold = newThreshold;
 }
 
 void Analyzer::record(bool sound, unsigned long time)
@@ -58,7 +58,7 @@ bool Analyzer::analysisRequired(unsigned long time)
 
 void Analyzer::analyze(Summary *summary)
 {
-    unsigned long lastSound = 0;
+    unsigned long previousSound = 0;
     int soundCounter = 0;
     int totalDuration = 0;
     for (int i = 0; i < _counter; i++)
@@ -69,23 +69,29 @@ void Analyzer::analyze(Summary *summary)
             continue;
         }
 
-        unsigned long duration = currentSound - lastSound;
+        unsigned long duration = currentSound - previousSound;
 
-        if (lastSound == 0 || duration >= CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound == 0 || duration >= CONTIGUOUS_SILENCE_THRESHOLD)
         {
             soundCounter++;
         }
 
-        if (lastSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
         {
             totalDuration += duration;
         }
 
-        lastSound = currentSound;
+        previousSound = currentSound;
     }
     summary->Count = soundCounter;
     summary->TotalDuration = totalDuration;
-    summary->RhythmDetected = (soundCounter >= _rhythmThreshold);
+    int averageDuration = 0;
+    if (soundCounter > 0)
+    {
+        averageDuration = (int)(totalDuration / soundCounter);
+    }
+    summary->AverageDuration = averageDuration;
+    summary->RhythmDetected = (soundCounter >= _rhythmThreshold) && (averageDuration >= _soundDurationThreshold);
 }
 
 void Analyzer::clear()

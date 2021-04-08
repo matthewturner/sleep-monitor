@@ -6,6 +6,7 @@ Summary summary;
 
 void setUp(void)
 {
+    analyzer.setSoundDurationThreshold(40);
     analyzer.clear();
     summary.AverageDuration = 0;
     summary.Count = 0;
@@ -40,10 +41,15 @@ void test_rhythmic_sound_detected_insufficient_samples(void)
 void test_rhythmic_sound_detected_frequency_low(void)
 {
     analyzer.recordSound(100);
+    analyzer.recordSound(150);
     analyzer.recordSound(500);
+    analyzer.recordSound(550);
     analyzer.recordSound(900);
+    analyzer.recordSound(950);
     analyzer.recordSound(1300);
+    analyzer.recordSound(1350);
     analyzer.recordSound(1700);
+    analyzer.recordSound(1750);
     analyzer.analyze(&summary);
     TEST_ASSERT_TRUE(summary.RhythmDetected);
 }
@@ -182,14 +188,26 @@ void test_only_last_sound_is_stored_separated(void)
     TEST_ASSERT_EQUAL(4, analyzer.count());
 }
 
-void test_average_duration_threshold(void)
+void test_average_duration_threshold_not_met(void)
 {
-    analyzer.setAverageDurationThreshold(600);
+    analyzer.setSoundDurationThreshold(60);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
     analyzer.recordSound(650);
-    TEST_ASSERT_EQUAL(4, analyzer.count());
+    analyzer.analyze(&summary);
+    TEST_ASSERT_FALSE(summary.RhythmDetected);
+}
+
+void test_average_duration_threshold(void)
+{
+    analyzer.setSoundDurationThreshold(60);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(75, summary.AverageDuration);
 }
 
 int main(int argc, char **argv)
@@ -216,6 +234,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_only_last_sound_is_stored_double);
     RUN_TEST(test_only_last_sound_is_stored);
     RUN_TEST(test_only_last_sound_is_stored_separated);
+    RUN_TEST(test_average_duration_threshold_not_met);
+    RUN_TEST(test_average_duration_threshold);
     UNITY_END();
 
     return 0;

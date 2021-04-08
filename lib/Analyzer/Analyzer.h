@@ -5,7 +5,7 @@
 #define CONTIGUOUS_SILENCE_THRESHOLD 300
 #define DEFAULT_RHYTHM_THRESHOLD 5
 #define DEFAULT_DURATION_THRESHOLD 20000
-#define DEFAULT_AVERAGE_DURATION_THRESHOLD 600
+#define DEFAULT_SOUND_DURATION_THRESHOLD 600
 
 struct summary
 {
@@ -30,7 +30,7 @@ public:
     void analyze(Summary *summary);
 
     void setRhythmThreshold(short newThreshold);
-    void setAverageDurationThreshold(short newThreshold);
+    void setSoundDurationThreshold(short newThreshold);
 
     void clear();
 
@@ -41,7 +41,7 @@ private:
     int _counter = 0;
     short _rhythmThreshold = DEFAULT_RHYTHM_THRESHOLD;
     int _durationThreshold = DEFAULT_DURATION_THRESHOLD;
-    short _averageDurationThreshold = DEFAULT_AVERAGE_DURATION_THRESHOLD;
+    short _soundDurationThreshold = DEFAULT_SOUND_DURATION_THRESHOLD;
 };
 
 #endif
