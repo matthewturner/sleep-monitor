@@ -182,6 +182,16 @@ void test_only_last_sound_is_stored_separated(void)
     TEST_ASSERT_EQUAL(4, analyzer.count());
 }
 
+void test_average_duration_threshold(void)
+{
+    analyzer.setAverageDurationThreshold(600);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    TEST_ASSERT_EQUAL(4, analyzer.count());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();

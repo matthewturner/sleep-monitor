@@ -9,6 +9,11 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmThreshold = newThreshold;
 }
 
+void Analyzer::setAverageDurationThreshold(short newThreshold)
+{
+    _averageDurationThreshold = newThreshold;
+}
+
 void Analyzer::record(bool sound, unsigned long time)
 {
     if (sound)
