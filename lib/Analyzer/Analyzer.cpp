@@ -105,20 +105,20 @@ void Analyzer::analyze(Summary *summary)
 
 int Analyzer::averageSoundDuration(Summary *summary)
 {
-    if (summary->Count > 0)
+    if (summary->Count == 0)
     {
-        return (int)(summary->TotalSoundDuration / summary->Count);
+        return 0;
     }
-    return 0;
+    return (int)(summary->TotalSoundDuration / summary->Count);
 }
 
 int Analyzer::averageSilenceDuration(Summary *summary)
 {
-    if (summary->Count > 1)
+    if (summary->Count <= 1)
     {
-        return (int)(summary->TotalSilenceDuration / (summary->Count - 1));
+        return 0;
     }
-    return 0;
+    return (int)(summary->TotalSilenceDuration / (summary->Count - 1));
 }
 
 bool Analyzer::rhythmDetected(Summary *summary)
