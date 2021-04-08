@@ -6,10 +6,14 @@ Summary summary;
 
 void setUp(void)
 {
+    analyzer.setSoundDurationThreshold(40);
+    analyzer.setSilenceDurationThreshold(350);
     analyzer.clear();
-    summary.AverageDuration = 0;
+    summary.AverageSoundDuration = 0;
+    summary.AverageSilenceDuration = 0;
     summary.Count = 0;
-    summary.TotalDuration = 0;
+    summary.TotalSoundDuration = 0;
+    summary.TotalSilenceDuration = 0;
 }
 
 void test_no_rhythmic_sound_detected_empty(void)
@@ -40,12 +44,34 @@ void test_rhythmic_sound_detected_insufficient_samples(void)
 void test_rhythmic_sound_detected_frequency_low(void)
 {
     analyzer.recordSound(100);
+    analyzer.recordSound(150);
     analyzer.recordSound(500);
+    analyzer.recordSound(550);
     analyzer.recordSound(900);
+    analyzer.recordSound(950);
     analyzer.recordSound(1300);
+    analyzer.recordSound(1350);
     analyzer.recordSound(1700);
+    analyzer.recordSound(1750);
     analyzer.analyze(&summary);
     TEST_ASSERT_TRUE(summary.RhythmDetected);
+}
+
+void test_rhythmic_sound_detected_silence_too_low(void)
+{
+    analyzer.setSilenceDurationThreshold(500);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(500);
+    analyzer.recordSound(550);
+    analyzer.recordSound(900);
+    analyzer.recordSound(950);
+    analyzer.recordSound(1300);
+    analyzer.recordSound(1350);
+    analyzer.recordSound(1700);
+    analyzer.recordSound(1750);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
 void test_count_rhythmic_sound_detected_frequency_low(void)
@@ -73,7 +99,7 @@ void test_duration_rhythmic_sound_detected_ignored(void)
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(50, summary.TotalDuration);
+    TEST_ASSERT_EQUAL(50, summary.TotalSoundDuration);
 }
 
 void test_duration_rhythmic_sound_detected_contiguous(void)
@@ -83,7 +109,7 @@ void test_duration_rhythmic_sound_detected_contiguous(void)
     analyzer.recordSound(250);
     analyzer.recordSound(350);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(250, summary.TotalDuration);
+    TEST_ASSERT_EQUAL(250, summary.TotalSoundDuration);
 }
 
 void test_count_rhythmic_sound_detected_separated(void)
@@ -103,7 +129,7 @@ void test_duration_rhythmic_sound_detected_separated(void)
     analyzer.recordSound(550);
     analyzer.recordSound(650);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(150, summary.TotalDuration);
+    TEST_ASSERT_EQUAL(150, summary.TotalSoundDuration);
 }
 
 void test_analysis_required_false_when_empty(void)
@@ -182,6 +208,52 @@ void test_only_last_sound_is_stored_separated(void)
     TEST_ASSERT_EQUAL(4, analyzer.count());
 }
 
+void test_average_duration_threshold_not_met(void)
+{
+    analyzer.setSoundDurationThreshold(60);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_FALSE(summary.RhythmDetected);
+}
+
+void test_average_sound_duration(void)
+{
+    analyzer.setSoundDurationThreshold(60);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(75, summary.AverageSoundDuration);
+}
+
+void test_average_silence_duration_single(void)
+{
+    analyzer.setSoundDurationThreshold(60);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(400, summary.AverageSilenceDuration);
+}
+
+void test_average_silence_duration_multiple(void)
+{
+    analyzer.setSoundDurationThreshold(60);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(650);
+    analyzer.recordSound(1150);
+    analyzer.recordSound(1250);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(450, summary.AverageSilenceDuration);
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -189,6 +261,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_no_rhythmic_sound_detected_frequency_high);
     RUN_TEST(test_rhythmic_sound_detected_insufficient_samples);
     RUN_TEST(test_rhythmic_sound_detected_frequency_low);
+    RUN_TEST(test_rhythmic_sound_detected_silence_too_low);
     RUN_TEST(test_count_rhythmic_sound_detected_frequency_low);
     RUN_TEST(test_count_rhythmic_sound_detected_ignored);
     RUN_TEST(test_duration_rhythmic_sound_detected_ignored);
@@ -206,6 +279,10 @@ int main(int argc, char **argv)
     RUN_TEST(test_only_last_sound_is_stored_double);
     RUN_TEST(test_only_last_sound_is_stored);
     RUN_TEST(test_only_last_sound_is_stored_separated);
+    RUN_TEST(test_average_duration_threshold_not_met);
+    RUN_TEST(test_average_sound_duration);
+    RUN_TEST(test_average_silence_duration_single);
+    RUN_TEST(test_average_silence_duration_multiple);
     UNITY_END();
 
     return 0;

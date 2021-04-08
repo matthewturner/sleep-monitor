@@ -6,7 +6,17 @@ Analyzer::Analyzer()
 
 void Analyzer::setRhythmThreshold(short newThreshold)
 {
-    _rhythmThreshold = newThreshold;
+    _rhythmSampleThreshold = newThreshold;
+}
+
+void Analyzer::setSilenceDurationThreshold(short newThreshold)
+{
+    _silenceDurationThreshold = newThreshold;
+}
+
+void Analyzer::setSoundDurationThreshold(short newThreshold)
+{
+    _soundDurationThreshold = newThreshold;
 }
 
 void Analyzer::record(bool sound, unsigned long time)
@@ -19,18 +29,24 @@ void Analyzer::record(bool sound, unsigned long time)
 
 void Analyzer::recordSound(unsigned long time)
 {
+    // 200    n xxx => 200 xxx
     if (_counter <= 1)
     {
         _samples[_counter] = time;
         _counter++;
         return;
     }
+    // 300 400    n 601 => 300 400 601
+    // need to make contiguous sound
+    // by maintaining an intervening mark
     if (time - _samples[_counter - 2] > CONTIGUOUS_SILENCE_THRESHOLD)
     {
         _samples[_counter] = time;
         _counter++;
         return;
     }
+    // 200 300    n 400 => 200 400
+    // overwrite the previous value
     _samples[_counter - 1] = time;
 }
 
@@ -44,7 +60,7 @@ bool Analyzer::analysisRequired(unsigned long time)
     {
         return true;
     }
-    if ((time - _samples[0]) > DEFAULT_DURATION_THRESHOLD)
+    if ((time - _samples[0]) > DEFAULT_MAXIMUM_DURATION_THRESHOLD)
     {
         return true;
     }
@@ -53,9 +69,7 @@ bool Analyzer::analysisRequired(unsigned long time)
 
 void Analyzer::analyze(Summary *summary)
 {
-    unsigned long lastSound = 0;
-    int soundCounter = 0;
-    int totalDuration = 0;
+    unsigned long previousSound = 0;
     for (int i = 0; i < _counter; i++)
     {
         unsigned long currentSound = _samples[i];
@@ -64,23 +78,55 @@ void Analyzer::analyze(Summary *summary)
             continue;
         }
 
-        unsigned long duration = currentSound - lastSound;
+        unsigned long duration = currentSound - previousSound;
 
-        if (lastSound == 0 || duration >= CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound == 0 || duration >= CONTIGUOUS_SILENCE_THRESHOLD)
         {
-            soundCounter++;
+            summary->Count++;
         }
 
-        if (lastSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
         {
-            totalDuration += duration;
+            summary->TotalSoundDuration += duration;
         }
 
-        lastSound = currentSound;
+        if (duration >= CONTIGUOUS_SILENCE_THRESHOLD)
+        {
+            summary->TotalSilenceDuration += duration;
+        }
+
+        previousSound = currentSound;
     }
-    summary->Count = soundCounter;
-    summary->TotalDuration = totalDuration;
-    summary->RhythmDetected = (soundCounter >= _rhythmThreshold);
+
+    summary->AverageSoundDuration = averageSoundDuration(summary);
+    summary->AverageSilenceDuration = averageSilenceDuration(summary);
+    summary->RhythmDetected = rhythmDetected(summary);
+}
+
+int Analyzer::averageSoundDuration(Summary *summary)
+{
+    if (summary->Count == 0)
+    {
+        return 0;
+    }
+    return (int)(summary->TotalSoundDuration / summary->Count);
+}
+
+int Analyzer::averageSilenceDuration(Summary *summary)
+{
+    if (summary->Count <= 1)
+    {
+        return 0;
+    }
+    return (int)(summary->TotalSilenceDuration / (summary->Count - 1));
+}
+
+bool Analyzer::rhythmDetected(Summary *summary)
+{
+    bool sampleCountOk = (summary->Count >= _rhythmSampleThreshold);
+    bool soundDurationOk = (summary->AverageSoundDuration >= _soundDurationThreshold);
+    bool silenceDurationOk = (summary->AverageSilenceDuration >= _silenceDurationThreshold);
+    return sampleCountOk && soundDurationOk && silenceDurationOk;
 }
 
 void Analyzer::clear()
