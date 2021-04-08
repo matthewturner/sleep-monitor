@@ -3,15 +3,18 @@
 
 #define SAMPLE_BUFFER_COUNT 200
 #define CONTIGUOUS_SILENCE_THRESHOLD 300
-#define DEFAULT_RHYTHM_THRESHOLD 5
-#define DEFAULT_DURATION_THRESHOLD 20000
+#define DEFAULT_RHYTHM_SAMPLE_THRESHOLD 5
+#define DEFAULT_MAXIMUM_DURATION_THRESHOLD 20000
 #define DEFAULT_SOUND_DURATION_THRESHOLD 600
+#define DEFAULT_SILENCE_DURATION_THRESHOLD 2000
 
 struct summary
 {
     short Count;
-    short TotalDuration;
-    short AverageDuration;
+    int TotalSoundDuration;
+    int TotalSilenceDuration;
+    int AverageSoundDuration;
+    int AverageSilenceDuration;
     bool RhythmDetected;
 };
 
@@ -31,6 +34,7 @@ public:
 
     void setRhythmThreshold(short newThreshold);
     void setSoundDurationThreshold(short newThreshold);
+    void setSilenceDurationThreshold(short newThreshold);
 
     void clear();
 
@@ -39,9 +43,10 @@ public:
 private:
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     int _counter = 0;
-    short _rhythmThreshold = DEFAULT_RHYTHM_THRESHOLD;
-    int _durationThreshold = DEFAULT_DURATION_THRESHOLD;
+    short _rhythmSampleThreshold = DEFAULT_RHYTHM_SAMPLE_THRESHOLD;
+    short _durationThreshold = DEFAULT_MAXIMUM_DURATION_THRESHOLD;
     short _soundDurationThreshold = DEFAULT_SOUND_DURATION_THRESHOLD;
+    short _silenceDurationThreshold = DEFAULT_SILENCE_DURATION_THRESHOLD;
 };
 
 #endif
