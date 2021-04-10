@@ -9,9 +9,10 @@ void Analyzer::setRhythmThreshold(short newThreshold)
     _rhythmSampleThreshold = newThreshold;
 }
 
-void Analyzer::setSilenceDurationThreshold(short newThreshold)
+void Analyzer::setSilenceDurationThreshold(short min, short max)
 {
-    _silenceDurationThreshold = newThreshold;
+    _minSilenceDurationThreshold = min;
+    _maxSilenceDurationThreshold = max;
 }
 
 void Analyzer::setSoundDurationThreshold(short newThreshold)
@@ -60,7 +61,7 @@ bool Analyzer::analysisRequired(unsigned long time)
     {
         return true;
     }
-    if ((time - _samples[0]) > DEFAULT_MAXIMUM_DURATION_THRESHOLD)
+    if ((time - _samples[0]) > DEFAULT_MAX_DURATION_THRESHOLD)
     {
         return true;
     }
@@ -103,29 +104,29 @@ void Analyzer::analyze(Summary *summary)
     summary->RhythmDetected = rhythmDetected(summary);
 }
 
-int Analyzer::averageSoundDuration(Summary *summary)
+long Analyzer::averageSoundDuration(Summary *summary)
 {
     if (summary->Count == 0)
     {
         return 0;
     }
-    return (int)(summary->TotalSoundDuration / summary->Count);
+    return (long)(summary->TotalSoundDuration / summary->Count);
 }
 
-int Analyzer::averageSilenceDuration(Summary *summary)
+long Analyzer::averageSilenceDuration(Summary *summary)
 {
     if (summary->Count <= 1)
     {
         return 0;
     }
-    return (int)(summary->TotalSilenceDuration / (summary->Count - 1));
+    return (long)(summary->TotalSilenceDuration / (summary->Count - 1));
 }
 
 bool Analyzer::rhythmDetected(Summary *summary)
 {
     bool sampleCountOk = (summary->Count >= _rhythmSampleThreshold);
     bool soundDurationOk = (summary->AverageSoundDuration >= _soundDurationThreshold);
-    bool silenceDurationOk = (summary->AverageSilenceDuration >= _silenceDurationThreshold);
+    bool silenceDurationOk = (summary->AverageSilenceDuration >= _minSilenceDurationThreshold) && (summary->AverageSilenceDuration < _maxSilenceDurationThreshold);
     return sampleCountOk && soundDurationOk && silenceDurationOk;
 }
 

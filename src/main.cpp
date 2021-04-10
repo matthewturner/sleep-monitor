@@ -19,7 +19,7 @@ void setup()
   _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
 
-  _analyzer.setSilenceDurationThreshold(2000);
+  _analyzer.setSilenceDurationThreshold(1500, 3000);
   _analyzer.setSoundDurationThreshold(50);
 
   _pillow.tryDeflate();
