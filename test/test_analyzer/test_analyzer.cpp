@@ -9,11 +9,21 @@ void setUp(void)
     analyzer.setSoundDurationThreshold(40);
     analyzer.setSilenceDurationThreshold(350, 800);
     analyzer.clear();
-    summary.AverageSoundDuration = 0;
-    summary.AverageSilenceDuration = 0;
-    summary.Count = 0;
-    summary.TotalSoundDuration = 0;
-    summary.TotalSilenceDuration = 0;
+}
+
+void test_summary_cleared(void)
+{
+    summary.AverageSoundDuration = 99;
+    summary.AverageSilenceDuration = 99;
+    summary.Count = 99;
+    summary.TotalSoundDuration = 99;
+    summary.TotalSilenceDuration = 99;
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(0, summary.Count);
+    TEST_ASSERT_EQUAL(0, summary.AverageSilenceDuration);
+    TEST_ASSERT_EQUAL(0, summary.AverageSoundDuration);
+    TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
+    TEST_ASSERT_EQUAL(0, summary.TotalSoundDuration);
 }
 
 void test_no_rhythmic_sound_detected_empty(void)
@@ -268,6 +278,7 @@ void test_average_silence_duration_threshold_exceeded(void)
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
+    RUN_TEST(test_summary_cleared);
     RUN_TEST(test_no_rhythmic_sound_detected_empty);
     RUN_TEST(test_no_rhythmic_sound_detected_frequency_high);
     RUN_TEST(test_rhythmic_sound_detected_insufficient_samples);

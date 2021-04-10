@@ -70,6 +70,12 @@ bool Analyzer::analysisRequired(unsigned long time)
 
 void Analyzer::analyze(Summary *summary)
 {
+    summary->Count = 0;
+    summary->AverageSoundDuration = 0;
+    summary->AverageSilenceDuration = 0;
+    summary->TotalSoundDuration = 0;
+    summary->TotalSilenceDuration = 0;
+
     unsigned long previousSound = 0;
     for (int i = 0; i < _counter; i++)
     {
