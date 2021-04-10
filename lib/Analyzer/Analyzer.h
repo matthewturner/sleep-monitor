@@ -11,8 +11,8 @@
 struct summary
 {
     short Count;
-    int TotalSoundDuration;
-    int TotalSilenceDuration;
+    long TotalSoundDuration;
+    long TotalSilenceDuration;
     int AverageSoundDuration;
     int AverageSilenceDuration;
     bool RhythmDetected;

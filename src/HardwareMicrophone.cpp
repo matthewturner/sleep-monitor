@@ -8,5 +8,5 @@ HardwareMicrophone::HardwareMicrophone(short pin)
 
 bool HardwareMicrophone::read()
 {
-    return digitalRead(_pin) == HIGH;
+    return digitalRead(_pin) == LOW;
 }

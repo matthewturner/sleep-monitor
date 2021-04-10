@@ -23,5 +23,6 @@
 #define TRIGGER_PIN 2
 
 void printStatus(uint64_t currentTime);
+void printSummary(Summary *summary);
 
 #endif

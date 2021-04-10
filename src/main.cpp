@@ -19,6 +19,9 @@ void setup()
   _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
 
+  _analyzer.setSilenceDurationThreshold(2000);
+  _analyzer.setSoundDurationThreshold(50);
+
   _pillow.tryDeflate();
 
   Serial.println("Setup complete. Continuing...");
@@ -43,6 +46,7 @@ void loop()
   {
     Serial.println("Analyzing...");
     _analyzer.analyze(&_summary);
+    printSummary(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)
@@ -54,6 +58,23 @@ void loop()
 
   printStatus(currentTime);
   _pillow.proceed();
+}
+
+void printSummary(Summary *summary)
+{
+  Serial.println("Summary");
+  Serial.print("\tSample Count: ");
+  Serial.println(summary->Count);
+  Serial.print("\tTotal Sound Duration: ");
+  Serial.println(summary->TotalSoundDuration);
+  Serial.print("\tTotal Silence Duration: ");
+  Serial.println(summary->TotalSilenceDuration);
+  Serial.print("\tAverage Sound Duration: ");
+  Serial.println(summary->AverageSoundDuration);
+  Serial.print("\tAverage Silence Duration: ");
+  Serial.println(summary->AverageSilenceDuration);
+  Serial.print("\tRhythm Detected: ");
+  Serial.println(summary->RhythmDetected);
 }
 
 void printStatus(uint64_t currentTime)
