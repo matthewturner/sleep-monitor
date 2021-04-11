@@ -77,7 +77,7 @@ void Analyzer::analyze(Summary *summary)
     summary->TotalSilenceDuration = 0;
 
     unsigned long previousSound = 0;
-    for (int i = 0; i < _counter; i++)
+    for (unsigned int i = 0; i < _counter; i++)
     {
         unsigned long currentSound = _samples[i];
         if (currentSound == 0)
@@ -110,22 +110,22 @@ void Analyzer::analyze(Summary *summary)
     summary->RhythmDetected = rhythmDetected(summary);
 }
 
-long Analyzer::averageSoundDuration(Summary *summary)
+unsigned long Analyzer::averageSoundDuration(Summary *summary)
 {
     if (summary->Count == 0)
     {
         return 0;
     }
-    return (long)(summary->TotalSoundDuration / summary->Count);
+    return (unsigned long)(summary->TotalSoundDuration / summary->Count);
 }
 
-long Analyzer::averageSilenceDuration(Summary *summary)
+unsigned long Analyzer::averageSilenceDuration(Summary *summary)
 {
     if (summary->Count <= 1)
     {
         return 0;
     }
-    return (long)(summary->TotalSilenceDuration / (summary->Count - 1));
+    return (unsigned long)(summary->TotalSilenceDuration / (summary->Count - 1));
 }
 
 bool Analyzer::rhythmDetected(Summary *summary)

@@ -11,11 +11,11 @@
 
 struct summary
 {
-    short Count;
-    long TotalSoundDuration;
-    long TotalSilenceDuration;
-    long AverageSoundDuration;
-    long AverageSilenceDuration;
+    unsigned short Count;
+    unsigned long TotalSoundDuration;
+    unsigned long TotalSilenceDuration;
+    unsigned long AverageSoundDuration;
+    unsigned long AverageSilenceDuration;
     bool RhythmDetected;
 };
 
@@ -43,16 +43,16 @@ public:
 
 private:
     bool rhythmDetected(Summary *summary);
-    long averageSoundDuration(Summary *summary);
-    long averageSilenceDuration(Summary *summary);
+    unsigned long averageSoundDuration(Summary *summary);
+    unsigned long averageSilenceDuration(Summary *summary);
 
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
-    int _counter = 0;
-    short _rhythmSampleThreshold = DEFAULT_RHYTHM_SAMPLE_THRESHOLD;
-    short _durationThreshold = DEFAULT_MAX_DURATION_THRESHOLD;
-    short _soundDurationThreshold = DEFAULT_SOUND_DURATION_THRESHOLD;
-    short _minSilenceDurationThreshold = DEFAULT_MIN_SILENCE_DURATION_THRESHOLD;
-    short _maxSilenceDurationThreshold = DEFAULT_MAX_SILENCE_DURATION_THRESHOLD;
+    unsigned int _counter = 0;
+    unsigned short _rhythmSampleThreshold = DEFAULT_RHYTHM_SAMPLE_THRESHOLD;
+    unsigned short _durationThreshold = DEFAULT_MAX_DURATION_THRESHOLD;
+    unsigned short _soundDurationThreshold = DEFAULT_SOUND_DURATION_THRESHOLD;
+    unsigned short _minSilenceDurationThreshold = DEFAULT_MIN_SILENCE_DURATION_THRESHOLD;
+    unsigned short _maxSilenceDurationThreshold = DEFAULT_MAX_SILENCE_DURATION_THRESHOLD;
 };
 
 #endif
