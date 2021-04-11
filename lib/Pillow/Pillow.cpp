@@ -22,6 +22,15 @@ short Pillow::intention()
     return _action;
 }
 
+short Pillow::state()
+{
+    if (stopped())
+    {
+        return STOPPED;
+    }
+    return _action;
+}
+
 void Pillow::start(short newAction)
 {
     _action = newAction;

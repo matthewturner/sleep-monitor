@@ -165,6 +165,24 @@ void test_try_inflate_does_not_start(void)
     TEST_ASSERT_FALSE(pillow.running());
 }
 
+void test_state_returns_stopped(void)
+{
+    pillow.stop();
+    TEST_ASSERT_EQUAL(STOPPED, pillow.state());
+}
+
+void test_state_returns_inflating(void)
+{
+    pillow.tryInflate();
+    TEST_ASSERT_EQUAL(INFLATING, pillow.state());
+}
+
+void test_state_returns_deflating(void)
+{
+    pillow.tryDeflate();
+    TEST_ASSERT_EQUAL(DEFLATING, pillow.state());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -189,6 +207,9 @@ int main(int argc, char **argv)
     RUN_TEST(test_try_deflate_does_not_start);
     RUN_TEST(test_try_inflate_starts);
     RUN_TEST(test_try_inflate_does_not_start);
+    RUN_TEST(test_state_returns_stopped);
+    RUN_TEST(test_state_returns_inflating);
+    RUN_TEST(test_state_returns_deflating);
     UNITY_END();
 
     return 0;

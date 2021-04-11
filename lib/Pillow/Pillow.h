@@ -6,6 +6,7 @@
 
 #define DEFLATING 1
 #define INFLATING -1
+#define STOPPED 0
 
 class Pillow
 {
@@ -16,6 +17,7 @@ public:
     bool inflated();
 
     short intention();
+    short state();
 
     bool tryInflate();
     bool tryDeflate();
