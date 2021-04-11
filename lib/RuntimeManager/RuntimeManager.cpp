@@ -22,7 +22,7 @@ void RuntimeManager::setMaxRuntime(unsigned int maxRuntime)
     _maxRuntime = maxRuntime;
 }
 
-void RuntimeManager::setMinWaitTime(unsigned long minWaitTime)
+void RuntimeManager::setMinWaitTime(unsigned int minWaitTime)
 {
     _minWaitTime = minWaitTime;
 }
