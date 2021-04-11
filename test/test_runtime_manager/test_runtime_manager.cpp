@@ -5,9 +5,9 @@ RuntimeManager runtimeManager;
 
 void setUp(void)
 {
-    runtimeManager.setCurrentTime(100);
-    runtimeManager.setMinWaitTime(50);
-    runtimeManager.setMaxRuntime(100);
+    runtimeManager.setCurrentTime(1);
+    runtimeManager.setMinWaitTime(5);
+    runtimeManager.setMaxRuntime(10);
 }
 
 void test_run_returns_true_if_never_run(void)
@@ -17,17 +17,19 @@ void test_run_returns_true_if_never_run(void)
 
 void test_run_returns_false_if_runtime_exceeded(void)
 {
-    runtimeManager.run();
-    runtimeManager.setCurrentTime(101);
+    for (int i = 0; i <= 10; i++)
+    {
+        runtimeManager.setCurrentTime(i + 110);
+        TEST_ASSERT_TRUE(runtimeManager.run());
+    }
+    runtimeManager.setCurrentTime(121);
     TEST_ASSERT_FALSE(runtimeManager.run());
 }
 
 void test_run_returns_true_if_wait_time_exceeded(void)
 {
     runtimeManager.run();
-    runtimeManager.setCurrentTime(101);
-    runtimeManager.run();
-    runtimeManager.setCurrentTime(51);
+    runtimeManager.setCurrentTime(6);
     TEST_ASSERT_TRUE(runtimeManager.run());
 }
 

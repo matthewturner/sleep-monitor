@@ -11,6 +11,7 @@
 #include "HardwareStepper.h"
 #include "HardwareMicrophone.h"
 #include "Pillow.h"
+#include "RuntimeManager.h"
 
 #define SOUND_DETECTED LOW
 #define END_STOP_TOP_PIN 12

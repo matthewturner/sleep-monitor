@@ -3,11 +3,12 @@
 AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
 Analyzer _analyzer;
 Summary _summary;
+RuntimeManager runtimeManager;
 HardwareTrigger _trigger(TRIGGER_PIN);
 HardwareMicrophone _microphone(MICROPHONE_PIN);
 HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
-HardwareStepper _stepperAdapter(&_stepper);
+HardwareStepper _stepperAdapter(&_stepper, &runtimeManager);
 Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
 uint64_t _lastOutput;
 
@@ -30,6 +31,7 @@ void setup()
 void loop()
 {
   uint64_t currentTime = millis();
+  runtimeManager.setCurrentTime(currentTime);
 
   _pillow.check();
 
