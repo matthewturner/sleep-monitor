@@ -17,12 +17,12 @@ void RuntimeManager::setCurrentTime(unsigned long time)
     _timeProvider->set(time);
 }
 
-void RuntimeManager::setMaxRuntime(unsigned int maxRuntime)
+void RuntimeManager::setMaxRuntime(uint32_t maxRuntime)
 {
     _maxRuntime = maxRuntime;
 }
 
-void RuntimeManager::setMinWaitTime(unsigned int minWaitTime)
+void RuntimeManager::setMinWaitTime(uint32_t minWaitTime)
 {
     _minWaitTime = minWaitTime;
 }

@@ -36,7 +36,7 @@ void Analyzer::record(bool sound)
     }
 }
 
-void Analyzer::recordSound(unsigned long time)
+void Analyzer::recordSound(uint64_t time)
 {
     if (_counter >= SAMPLE_BUFFER_COUNT)
     {
@@ -112,7 +112,7 @@ void Analyzer::analyze(Summary *summary)
     unsigned long silenceDurations[70];
     for (unsigned int i = 0; i < _counter; i++)
     {
-        unsigned long currentSound = _samples[i];
+        uint64_t currentSound = _samples[i];
         if (currentSound == 0)
         {
             continue;
@@ -243,7 +243,7 @@ void Analyzer::clear()
     _counter = 0;
 }
 
-short Analyzer::count()
+uint16_t Analyzer::count()
 {
     return _counter;
 }

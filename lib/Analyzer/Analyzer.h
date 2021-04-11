@@ -67,7 +67,7 @@ public:
 
     void clear();
 
-    short count();
+    uint16_t count();
 
 private:
     TimeProvider *_timeProvider;
