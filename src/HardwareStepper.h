@@ -3,12 +3,13 @@
 
 #include <Arduino.h>
 #include "Stepper.h"
+#include "RuntimeManager.h"
 #include <AccelStepper.h>
 
 class HardwareStepper : public Stepper
 {
 public:
-    HardwareStepper(AccelStepper *stepper);
+    HardwareStepper(AccelStepper *stepper, RuntimeManager *runtimeManager);
 
     void setSpeed(int speed) override;
 
@@ -22,6 +23,7 @@ public:
 
 private:
     AccelStepper *_stepper;
+    RuntimeManager *_runtimeManager;
     short _enablePin;
 };
 

@@ -1,8 +1,9 @@
 #include "HardwareStepper.h"
 
-HardwareStepper::HardwareStepper(AccelStepper *stepper)
+HardwareStepper::HardwareStepper(AccelStepper *stepper, RuntimeManager *runtimeManager)
 {
     _stepper = stepper;
+    _runtimeManager = runtimeManager;
 }
 
 void HardwareStepper::setSpeed(int speed)
@@ -12,7 +13,10 @@ void HardwareStepper::setSpeed(int speed)
 
 void HardwareStepper::run()
 {
-    _stepper->runSpeed();
+    if (_runtimeManager->run())
+    {
+        _stepper->runSpeed();
+    }
 }
 
 void HardwareStepper::enable()
@@ -28,7 +32,6 @@ void HardwareStepper::disable()
 void HardwareStepper::setEnablePin(short pin)
 {
     _enablePin = pin;
-    // _stepper->setEnablePin(pin);
     pinMode(pin, OUTPUT);
 }
 
