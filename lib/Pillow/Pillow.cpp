@@ -68,7 +68,10 @@ bool Pillow::running()
 
 void Pillow::proceed()
 {
-    _stepper->run();
+    if (running())
+    {
+        _stepper->run();
+    }
 }
 
 void Pillow::check()

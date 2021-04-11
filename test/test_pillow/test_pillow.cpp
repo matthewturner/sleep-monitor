@@ -95,8 +95,16 @@ void test_check_does_not_disable_when_inflated_but_deflating(void)
 
 void test_proceed_calls_run(void)
 {
+    pillow.tryInflate();
     pillow.proceed();
     TEST_ASSERT_TRUE(stepper.wasRun());
+}
+
+void test_proceed_does_not_call_run(void)
+{
+    pillow.stop();
+    pillow.proceed();
+    TEST_ASSERT_FALSE(stepper.wasRun());
 }
 
 void test_reverse_stops_inflating(void)
@@ -172,6 +180,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_check_disables_when_inflated);
     RUN_TEST(test_check_does_not_disable_when_inflated_but_deflating);
     RUN_TEST(test_proceed_calls_run);
+    RUN_TEST(test_proceed_does_not_call_run);
     RUN_TEST(test_reverse_stops_inflating);
     RUN_TEST(test_reverse_starts_deflating);
     RUN_TEST(test_reverse_inflates_immediately_when_deflated);
