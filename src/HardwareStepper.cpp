@@ -28,7 +28,6 @@ void HardwareStepper::disable()
 void HardwareStepper::setEnablePin(short pin)
 {
     _enablePin = pin;
-    // _stepper->setEnablePin(pin);
     pinMode(pin, OUTPUT);
 }
 
