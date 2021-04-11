@@ -1,3 +1,5 @@
+[![PlatformIO CI](https://github.com/matthewturner/sleep-monitor/actions/workflows/platformio.yml/badge.svg)](https://github.com/matthewturner/sleep-monitor/actions/workflows/platformio.yml)
+
 # Sleep Monitor
 
 Monitors your sleep and inflates a pillow automatically to adjust your head position.
