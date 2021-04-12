@@ -112,6 +112,14 @@ void test_duration_rhythmic_sound_detected_ignored(void)
     TEST_ASSERT_EQUAL(50, summary.TotalSoundDuration);
 }
 
+void test_total_silence_duration_ignore_first(void)
+{
+    analyzer.recordSound(5000);
+    analyzer.recordSound(5150);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
+}
+
 void test_duration_rhythmic_sound_detected_contiguous(void)
 {
     analyzer.recordSound(100);
@@ -287,6 +295,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_count_rhythmic_sound_detected_frequency_low);
     RUN_TEST(test_count_rhythmic_sound_detected_ignored);
     RUN_TEST(test_duration_rhythmic_sound_detected_ignored);
+    RUN_TEST(test_total_silence_duration_ignore_first);
     RUN_TEST(test_duration_rhythmic_sound_detected_contiguous);
     RUN_TEST(test_count_rhythmic_sound_detected_separated);
     RUN_TEST(test_duration_rhythmic_sound_detected_separated);

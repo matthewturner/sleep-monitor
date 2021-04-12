@@ -40,7 +40,7 @@ void Analyzer::recordSound(unsigned long time)
     // 300 400    n 601 => 300 400 601
     // need to make contiguous sound
     // by maintaining an intervening mark
-    if (time - _samples[_counter - 2] > CONTIGUOUS_SILENCE_THRESHOLD)
+    if (time - _samples[_counter - 2] > CONTIGUOUS_SOUND_THRESHOLD)
     {
         _samples[_counter] = time;
         _counter++;
@@ -87,17 +87,17 @@ void Analyzer::analyze(Summary *summary)
 
         unsigned long duration = currentSound - previousSound;
 
-        if (previousSound == 0 || duration >= CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound == 0 || duration >= CONTIGUOUS_SOUND_THRESHOLD)
         {
             summary->Count++;
         }
 
-        if (previousSound != 0 && duration < CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound != 0 && duration < CONTIGUOUS_SOUND_THRESHOLD)
         {
             summary->TotalSoundDuration += duration;
         }
 
-        if (duration >= CONTIGUOUS_SILENCE_THRESHOLD)
+        if (previousSound != 0 && duration >= CONTIGUOUS_SOUND_THRESHOLD)
         {
             summary->TotalSilenceDuration += duration;
         }
