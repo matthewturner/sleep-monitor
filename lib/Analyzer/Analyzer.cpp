@@ -76,6 +76,23 @@ void Analyzer::analyze(Summary *summary)
     summary->TotalSoundDuration = 0;
     summary->TotalSilenceDuration = 0;
 
+    for (int i = 0; i < DISPLAY_LENGTH; i++)
+    {
+        summary->Display[i] = '_';
+    }
+
+    unsigned long firstSound = 0;
+    summary->SliceDuration = 0;
+    if (_counter == 1)
+    {
+        summary->Display[0] = '|';
+    }
+
+    if (_counter > 0)
+    {
+        firstSound = _samples[0];
+        summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
+    }
     unsigned long previousSound = 0;
     for (unsigned int i = 0; i < _counter; i++)
     {
@@ -83,6 +100,12 @@ void Analyzer::analyze(Summary *summary)
         if (currentSound == 0)
         {
             continue;
+        }
+
+        if (summary->SliceDuration > 0)
+        {
+            unsigned short displayIndexForSound = (unsigned short)((currentSound - firstSound) / summary->SliceDuration);
+            summary->Display[displayIndexForSound] = '|';
         }
 
         unsigned long duration = currentSound - previousSound;

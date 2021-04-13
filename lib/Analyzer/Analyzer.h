@@ -9,6 +9,8 @@
 #define DEFAULT_MIN_SILENCE_DURATION_THRESHOLD 2000
 #define DEFAULT_MAX_SILENCE_DURATION_THRESHOLD 3000
 
+#define DISPLAY_LENGTH 100
+
 struct summary
 {
     unsigned short Count;
@@ -17,6 +19,8 @@ struct summary
     unsigned long AverageSoundDuration;
     unsigned long AverageSilenceDuration;
     bool RhythmDetected;
+    char Display[DISPLAY_LENGTH];
+    unsigned short SliceDuration;
 };
 
 typedef struct summary Summary;
