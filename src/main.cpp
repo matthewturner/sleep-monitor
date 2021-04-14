@@ -1,9 +1,9 @@
 #include "main.h"
 
 AccelStepper _stepper = AccelStepper(STEP_INTERFACE_TYPE, STEP_STEP_PIN, STEP_DIRECTION_PIN);
-Analyzer _analyzer;
-Summary _summary;
 TimeProvider _timeProvider;
+Analyzer _analyzer(&_timeProvider);
+Summary _summary;
 RuntimeManager _triggerRuntimeManager(&_timeProvider);
 HardwareTrigger _trigger(TRIGGER_PIN, &_triggerRuntimeManager);
 HardwareMicrophone _microphone(MICROPHONE_PIN);
@@ -12,12 +12,15 @@ HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
 RuntimeManager _runtimeManager(&_timeProvider);
 HardwareStepper _stepperAdapter(&_stepper, &_runtimeManager);
 Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
-uint64_t _lastOutput;
+RuntimeManager _summaryRuntimeManager(&_timeProvider);
 
 void setup()
 {
   Serial.begin(9600);
   pinMode(13, OUTPUT);
+
+  _summaryRuntimeManager.setMaxRuntime(0);
+  _summaryRuntimeManager.setMinWaitTime(2000);
 
   _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
@@ -36,7 +39,7 @@ void loop()
 
   _pillow.check();
 
-  _analyzer.record(_microphone.soundDetected(), _timeProvider.now());
+  _analyzer.record(_microphone.soundDetected());
 
   if (_trigger.triggered())
   {
@@ -45,7 +48,7 @@ void loop()
     _analyzer.clear();
   }
 
-  if (_analyzer.analysisRequired(_timeProvider.now()))
+  if (_analyzer.analysisRequired())
   {
     Serial.println("Analyzing...");
     _analyzer.analyze(&_summary);
@@ -59,7 +62,7 @@ void loop()
     }
   }
 
-  printStatus(_timeProvider.now());
+  printStatus();
   _pillow.proceed();
 }
 
@@ -123,14 +126,12 @@ void printSummary(Summary *summary)
   Serial.println();
 }
 
-void printStatus(uint64_t currentTime)
+void printStatus()
 {
-  if ((currentTime - _lastOutput) <= 2000)
+  if(!_summaryRuntimeManager.run())
   {
     return;
   }
-
-  _lastOutput = currentTime;
 
   if (_pillow.inflated())
   {

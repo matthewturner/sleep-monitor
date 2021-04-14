@@ -1,7 +1,8 @@
 #include "Analyzer.h"
 
-Analyzer::Analyzer()
+Analyzer::Analyzer(TimeProvider *timeProvider)
 {
+    _timeProvider = timeProvider;
 }
 
 void Analyzer::setRhythmThreshold(short newThreshold)
@@ -20,11 +21,11 @@ void Analyzer::setSoundDurationThreshold(short newThreshold)
     _soundDurationThreshold = newThreshold;
 }
 
-void Analyzer::record(bool sound, unsigned long time)
+void Analyzer::record(bool sound)
 {
     if (sound)
     {
-        recordSound(time);
+        recordSound(_timeProvider->now());
     }
 }
 
@@ -51,7 +52,7 @@ void Analyzer::recordSound(unsigned long time)
     _samples[_counter - 1] = time;
 }
 
-bool Analyzer::analysisRequired(unsigned long time)
+bool Analyzer::analysisRequired()
 {
     if (_counter == 0)
     {
@@ -61,7 +62,7 @@ bool Analyzer::analysisRequired(unsigned long time)
     {
         return true;
     }
-    if ((time - _samples[0]) > DEFAULT_MAX_DURATION_THRESHOLD)
+    if ((_timeProvider->now() - _samples[0]) > DEFAULT_MAX_DURATION_THRESHOLD)
     {
         return true;
     }
