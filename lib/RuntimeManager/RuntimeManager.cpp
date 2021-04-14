@@ -17,12 +17,17 @@ void RuntimeManager::setMinWaitTime(unsigned int minWaitTime)
 
 bool RuntimeManager::run()
 {
+    if (_startRuntime == 0)
+    {
+        _startRuntime = _currentTime;
+        _lastRuntime = _currentTime;
+    }
     if ((_currentTime - _lastRuntime) > _minWaitTime)
     {
         _startRuntime = _currentTime;
         _lastRuntime = _currentTime;
     }
-    if ((_lastRuntime - _startRuntime) < _maxRuntime)
+    if ((_lastRuntime - _startRuntime) <= _maxRuntime)
     {
         _lastRuntime = _currentTime;
         return true;
