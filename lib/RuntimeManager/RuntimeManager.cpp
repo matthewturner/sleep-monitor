@@ -1,8 +1,13 @@
 #include "RuntimeManager.h"
 
+RuntimeManager::RuntimeManager(TimeProvider *timeProvider)
+{
+    _timeProvider = timeProvider;
+}
+
 void RuntimeManager::setCurrentTime(unsigned long time)
 {
-    _currentTime = time;
+    _timeProvider->set(time);
 }
 
 void RuntimeManager::setMaxRuntime(unsigned int maxRuntime)
@@ -17,21 +22,22 @@ void RuntimeManager::setMinWaitTime(unsigned int minWaitTime)
 
 bool RuntimeManager::run()
 {
+    unsigned long currentTime = _timeProvider->now();
     if (_startRuntime == 0)
     {
-        _startRuntime = _currentTime;
-        _lastRuntime = _currentTime;
+        _startRuntime = currentTime;
+        _lastRuntime = currentTime;
         return true;
     }
-    if ((_currentTime - _lastRuntime) > _minWaitTime)
+    if ((currentTime - _lastRuntime) > _minWaitTime)
     {
-        _startRuntime = _currentTime;
-        _lastRuntime = _currentTime;
+        _startRuntime = currentTime;
+        _lastRuntime = currentTime;
         return true;
     }
     if ((_lastRuntime - _startRuntime) < _maxRuntime)
     {
-        _lastRuntime = _currentTime;
+        _lastRuntime = currentTime;
         return true;
     }
     return false;

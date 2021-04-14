@@ -7,7 +7,7 @@
 class HardwareTrigger : public Trigger
 {
 public:
-    HardwareTrigger(short pin);
+    HardwareTrigger(short pin, RuntimeManager *runtimeManager);
 
 protected:
     bool read() override;

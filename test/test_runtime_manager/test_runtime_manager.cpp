@@ -1,7 +1,8 @@
 #include <unity.h>
 #include "RuntimeManager.h"
 
-RuntimeManager runtimeManager;
+TimeProvider timeProvider;
+RuntimeManager runtimeManager(&timeProvider);
 
 void setUp(void)
 {
