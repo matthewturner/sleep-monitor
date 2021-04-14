@@ -6,6 +6,8 @@
 class SoftwareTrigger : public Trigger
 {
 public:
+    SoftwareTrigger(RuntimeManager *runtimeManager);
+
     void setReading(bool reading);
 
 protected:
