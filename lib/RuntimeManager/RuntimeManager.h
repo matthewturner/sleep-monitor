@@ -14,6 +14,8 @@ public:
 
     bool run();
 
+    void reset();
+
 private:
     unsigned long _currentTime = 0;
     unsigned long _startRuntime = 0;

@@ -21,16 +21,24 @@ bool RuntimeManager::run()
     {
         _startRuntime = _currentTime;
         _lastRuntime = _currentTime;
+        return true;
     }
     if ((_currentTime - _lastRuntime) > _minWaitTime)
     {
         _startRuntime = _currentTime;
         _lastRuntime = _currentTime;
+        return true;
     }
-    if ((_lastRuntime - _startRuntime) <= _maxRuntime)
+    if ((_lastRuntime - _startRuntime) < _maxRuntime)
     {
         _lastRuntime = _currentTime;
         return true;
     }
     return false;
+}
+
+void RuntimeManager::reset()
+{
+    _startRuntime = 0;
+    _lastRuntime = 0;
 }
