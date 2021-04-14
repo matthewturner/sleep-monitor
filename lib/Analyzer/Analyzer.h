@@ -1,6 +1,8 @@
 #ifndef Analyzer_h
 #define Analyzer_h
 
+#include "TimeProvider.h"
+
 #define SAMPLE_BUFFER_COUNT 200
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_RHYTHM_SAMPLE_THRESHOLD 5
@@ -28,12 +30,12 @@ typedef struct summary Summary;
 class Analyzer
 {
 public:
-    Analyzer();
+    Analyzer(TimeProvider *timeProvider);
 
-    void record(bool sound, unsigned long time);
+    void record(bool sound);
     void recordSound(unsigned long time);
 
-    bool analysisRequired(unsigned long time);
+    bool analysisRequired();
 
     void analyze(Summary *summary);
 
@@ -46,6 +48,7 @@ public:
     short count();
 
 private:
+    TimeProvider *_timeProvider;
     bool rhythmDetected(Summary *summary);
     unsigned long averageSoundDuration(Summary *summary);
     unsigned long averageSilenceDuration(Summary *summary);

@@ -1,7 +1,8 @@
 #include <unity.h>
 #include "Analyzer.h"
 
-Analyzer analyzer;
+TimeProvider timeProvider;
+Analyzer analyzer(&timeProvider);
 Summary summary;
 
 void setUp(void)
@@ -152,45 +153,52 @@ void test_duration_rhythmic_sound_detected_separated(void)
 
 void test_analysis_required_false_when_empty(void)
 {
-    TEST_ASSERT_FALSE(analyzer.analysisRequired(5002));
+    timeProvider.set(5002);
+    TEST_ASSERT_FALSE(analyzer.analysisRequired());
 }
 
 void test_analysis_required_false(void)
 {
     analyzer.recordSound(5001);
-    TEST_ASSERT_FALSE(analyzer.analysisRequired(5002));
+    timeProvider.set(5002);
+    TEST_ASSERT_FALSE(analyzer.analysisRequired());
 }
 
 void test_analysis_required_true(void)
 {
     analyzer.recordSound(5000);
     analyzer.recordSound(25001);
-    TEST_ASSERT_TRUE(analyzer.analysisRequired(25002));
+    timeProvider.set(25002);
+    TEST_ASSERT_TRUE(analyzer.analysisRequired());
 }
 
 void test_analysis_required_by_record(void)
 {
     analyzer.recordSound(5000);
     analyzer.recordSound(25001);
-    TEST_ASSERT_TRUE(analyzer.analysisRequired(25002));
+    timeProvider.set(25002);
+    TEST_ASSERT_TRUE(analyzer.analysisRequired());
 }
 
 void test_analysis_required_after_significant_break(void)
 {
     analyzer.recordSound(5000);
-    TEST_ASSERT_TRUE(analyzer.analysisRequired(25001));
+    timeProvider.set(25001);
+    TEST_ASSERT_TRUE(analyzer.analysisRequired());
 }
 
 void test_record_silence(void)
 {
-    analyzer.record(false, 5000);
+    timeProvider.set(5000);
+    analyzer.record(false);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(0, summary.Count);
 }
 
 void test_record_sound(void)
 {
-    analyzer.record(true, 5000);
+    timeProvider.set(5000);
+    analyzer.record(true);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(1, summary.Count);
 }

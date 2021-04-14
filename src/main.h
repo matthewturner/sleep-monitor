@@ -23,7 +23,7 @@
 #define MICROPHONE_PIN 10
 #define TRIGGER_PIN 2
 
-void printStatus(uint64_t currentTime);
+void printStatus();
 void printSummary(Summary *summary);
 
 #endif
