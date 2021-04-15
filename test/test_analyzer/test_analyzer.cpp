@@ -68,7 +68,9 @@ void test_rhythmic_sound_detected_frequency_low(void)
     analyzer.recordSound(1350);
     analyzer.recordSound(1700);
     analyzer.recordSound(1750);
+    timeProvider.set(1750);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(RHYTHM_DETECTED, summary.Result);
     TEST_ASSERT_TRUE(summary.RhythmDetected);
 }
 
@@ -118,10 +120,29 @@ void test_duration_rhythmic_sound_detected_ignored(void)
     TEST_ASSERT_EQUAL(50, summary.TotalSoundDuration);
 }
 
+void test_silence_duration_at_end(void)
+{
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    timeProvider.set(300);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(150, summary.TotalSilenceDuration);
+}
+
+void test_average_silence_duration_at_end(void)
+{
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    timeProvider.set(300);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(0, summary.AverageSilenceDuration);
+}
+
 void test_total_silence_duration_ignore_first(void)
 {
     analyzer.recordSound(5000);
     analyzer.recordSound(5150);
+    timeProvider.set(5150);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
 }
@@ -270,6 +291,7 @@ void test_average_silence_duration_single(void)
     analyzer.recordSound(150);
     analyzer.recordSound(550);
     analyzer.recordSound(650);
+    timeProvider.set(650);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(400, summary.AverageSilenceDuration);
 }
@@ -283,6 +305,7 @@ void test_average_silence_duration_multiple(void)
     analyzer.recordSound(650);
     analyzer.recordSound(1150);
     analyzer.recordSound(1250);
+    timeProvider.set(1250);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(450, summary.AverageSilenceDuration);
 }
@@ -438,6 +461,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_count_rhythmic_sound_detected_frequency_low);
     RUN_TEST(test_count_rhythmic_sound_detected_ignored);
     RUN_TEST(test_duration_rhythmic_sound_detected_ignored);
+    RUN_TEST(test_silence_duration_at_end);
+    RUN_TEST(test_average_silence_duration_at_end);
     RUN_TEST(test_total_silence_duration_ignore_first);
     RUN_TEST(test_duration_rhythmic_sound_detected_contiguous);
     RUN_TEST(test_count_rhythmic_sound_detected_separated);

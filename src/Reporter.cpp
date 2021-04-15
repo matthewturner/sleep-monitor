@@ -20,6 +20,34 @@ void Reporter::reportOn(Summary *summary)
     Serial.println(summary->AverageSilenceDuration);
     Serial.print("\tRhythm Detected: ");
     Serial.println(summary->RhythmDetected);
+
+    Serial.print("\tResult: ");
+
+    switch (summary->Result)
+    {
+    case RHYTHM_DETECTED:
+        Serial.println("Rhythm detected");
+        break;
+    case INSUFFICIENT_SAMPLE_COUNT:
+        Serial.println("Insufficient sample cound");
+        break;
+    case INSUFFICIENT_SOUND_DURATION:
+        Serial.println("Insufficient sound");
+        break;
+    case INSUFFICIENT_SILENCE_DURATION:
+        Serial.println("Insufficient silence");
+        break;
+    case EXCESSIVE_SOUND_DURATION:
+        Serial.println("Excessive sound");
+        break;
+    case EXCESSIVE_SILENCE_DURATION:
+        Serial.println("Excessive silence");
+        break;
+    default:
+        Serial.println("Unknown result");
+        break;
+    }
+
     Serial.println("\tDisplay:");
     Serial.print("\t");
     for (short i = 0; i < DISPLAY_LENGTH; i++)

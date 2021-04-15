@@ -5,6 +5,11 @@ Analyzer::Analyzer(TimeProvider *timeProvider)
     _timeProvider = timeProvider;
 }
 
+void Analyzer::setDurationThreshold(short threshold)
+{
+    _durationThreshold = threshold;
+}
+
 void Analyzer::setSampleThreshold(short min, short max)
 {
     _minSampleThreshold = min;
@@ -64,7 +69,7 @@ bool Analyzer::analysisRequired()
     {
         return true;
     }
-    if ((_timeProvider->now() - _samples[0]) > DEFAULT_MAX_DURATION_THRESHOLD)
+    if ((_timeProvider->now() - _samples[0]) > _durationThreshold)
     {
         return true;
     }
@@ -131,6 +136,7 @@ void Analyzer::analyze(Summary *summary)
         previousSound = currentSound;
     }
 
+    summary->TotalSilenceDuration = _timeProvider->now() - summary->TotalSoundDuration - firstSound;
     summary->AverageSoundDuration = averageSoundDuration(summary);
     summary->AverageSilenceDuration = averageSilenceDuration(summary);
     summary->Result = determineResult(summary);

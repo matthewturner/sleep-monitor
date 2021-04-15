@@ -7,7 +7,7 @@
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
 #define DEFAULT_MAX_SAMPLE_THRESHOLD 40
-#define DEFAULT_MAX_DURATION_THRESHOLD 20000
+#define DEFAULT_DURATION_THRESHOLD 20000
 #define DEFAULT_MIN_SOUND_DURATION_THRESHOLD 50
 #define DEFAULT_MAX_SOUND_DURATION_THRESHOLD 600
 #define DEFAULT_MIN_SILENCE_DURATION_THRESHOLD 2000
@@ -50,7 +50,7 @@ public:
     void analyze(Summary *summary);
 
     void setSampleThreshold(short min, short max);
-    void setDurationThreshold(short min, short max);
+    void setDurationThreshold(short threshold);
     void setSoundDurationThreshold(short min, short max);
     void setSilenceDurationThreshold(short min, short max);
 
@@ -68,8 +68,8 @@ private:
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     unsigned int _counter = 0;
     unsigned short _minSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
-    unsigned short _maxSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
-    unsigned short _durationThreshold = DEFAULT_MAX_DURATION_THRESHOLD;
+    unsigned short _maxSampleThreshold = DEFAULT_MAX_SAMPLE_THRESHOLD;
+    unsigned short _durationThreshold = DEFAULT_DURATION_THRESHOLD;
     unsigned short _minSoundDurationThreshold = DEFAULT_MIN_SOUND_DURATION_THRESHOLD;
     unsigned short _maxSoundDurationThreshold = DEFAULT_MAX_SOUND_DURATION_THRESHOLD;
     unsigned short _minSilenceDurationThreshold = DEFAULT_MIN_SILENCE_DURATION_THRESHOLD;
