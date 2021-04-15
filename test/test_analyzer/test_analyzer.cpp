@@ -7,6 +7,7 @@ Summary summary;
 
 void setUp(void)
 {
+    analyzer.setMinSampleThreshold(DEFAULT_MIN_SAMPLE_THRESHOLD);
     analyzer.setSoundDurationThreshold(40);
     analyzer.setSilenceDurationThreshold(350, 800);
     analyzer.clear();
@@ -30,6 +31,7 @@ void test_summary_cleared(void)
 void test_no_rhythmic_sound_detected_empty(void)
 {
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -39,6 +41,7 @@ void test_no_rhythmic_sound_detected_frequency_high(void)
     analyzer.recordSound(20);
     analyzer.recordSound(30);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -49,6 +52,7 @@ void test_rhythmic_sound_detected_insufficient_samples(void)
     analyzer.recordSound(900);
     analyzer.recordSound(1300);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -82,6 +86,7 @@ void test_rhythmic_sound_detected_silence_too_low(void)
     analyzer.recordSound(1700);
     analyzer.recordSound(1750);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SILENCE_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -236,12 +241,14 @@ void test_only_last_sound_is_stored_separated(void)
 
 void test_average_duration_threshold_not_met(void)
 {
+    analyzer.setMinSampleThreshold(1);
     analyzer.setSoundDurationThreshold(60);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(600);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SOUND_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -282,12 +289,14 @@ void test_average_silence_duration_multiple(void)
 
 void test_average_silence_duration_threshold_exceeded(void)
 {
+    analyzer.setMinSampleThreshold(1);
     analyzer.setSilenceDurationThreshold(200, 300);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
     analyzer.recordSound(650);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(EXCESSIVE_SILENCE_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
