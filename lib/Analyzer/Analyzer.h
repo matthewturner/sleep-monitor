@@ -18,8 +18,9 @@
 #define RHYTHM_DETECTED 0
 #define INSUFFICIENT_SAMPLE_COUNT 1
 #define INSUFFICIENT_SOUND_DURATION 2
-#define INSUFFICIENT_SILENCE_DURATION 3
-#define EXCESSIVE_SILENCE_DURATION 4
+#define EXCESSIVE_SOUND_DURATION 3
+#define INSUFFICIENT_SILENCE_DURATION 4
+#define EXCESSIVE_SILENCE_DURATION 5
 
 struct summary
 {
@@ -48,9 +49,9 @@ public:
 
     void analyze(Summary *summary);
 
-    void setMinSampleThreshold(short newThreshold);
-    void setDurationThreshold(short newThreshold);
-    void setSoundDurationThreshold(short newThreshold);
+    void setSampleThreshold(short min, short max);
+    void setDurationThreshold(short min, short max);
+    void setSoundDurationThreshold(short min, short max);
     void setSilenceDurationThreshold(short min, short max);
 
     void clear();

@@ -161,9 +161,13 @@ unsigned short Analyzer::determineResult(Summary *summary)
     {
         return INSUFFICIENT_SAMPLE_COUNT;
     }
-    if (summary->AverageSoundDuration < _soundDurationThreshold)
+    if (summary->AverageSoundDuration < _minSoundDurationThreshold)
     {
         return INSUFFICIENT_SOUND_DURATION;
+    }
+    if (summary->AverageSoundDuration > _maxSoundDurationThreshold)
+    {
+        return EXCESSIVE_SOUND_DURATION;
     }
     if (summary->AverageSilenceDuration < _minSilenceDurationThreshold)
     {
