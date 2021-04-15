@@ -13,6 +13,7 @@ RuntimeManager _runtimeManager(&_timeProvider);
 HardwareStepper _stepperAdapter(&_stepper, &_runtimeManager);
 Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
 RuntimeManager _summaryRuntimeManager(&_timeProvider);
+Reporter _reporter(&_summaryRuntimeManager);
 
 void setup()
 {
@@ -52,7 +53,7 @@ void loop()
   {
     Serial.println("Analyzing...");
     _analyzer.analyze(&_summary);
-    printSummary(&_summary);
+    _reporter.reportOn(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)
@@ -62,95 +63,6 @@ void loop()
     }
   }
 
-  printStatus();
+  _reporter.reportOn(&_pillow);
   _pillow.proceed();
-}
-
-void printSummary(Summary *summary)
-{
-  Serial.println("Summary");
-  Serial.print("\tSample Count: ");
-  Serial.println(summary->Count);
-  Serial.print("\tTotal Sound Duration: ");
-  Serial.println(summary->TotalSoundDuration);
-  Serial.print("\tTotal Silence Duration: ");
-  Serial.println(summary->TotalSilenceDuration);
-  Serial.print("\tAverage Sound Duration: ");
-  Serial.println(summary->AverageSoundDuration);
-  Serial.print("\tAverage Silence Duration: ");
-  Serial.println(summary->AverageSilenceDuration);
-  Serial.print("\tRhythm Detected: ");
-  Serial.println(summary->RhythmDetected);
-  Serial.println("\tDisplay:");
-  Serial.print("\t");
-  for (short i = 0; i < DISPLAY_LENGTH; i++)
-  {
-    if (summary->Display[i] == '|')
-    {
-      Serial.print('_');
-    }
-    else
-    {
-      Serial.print(" ");
-    }
-  }
-  Serial.println();
-  Serial.print("\t");
-  for (short i = 0; i < DISPLAY_LENGTH; i++)
-  {
-    if (summary->Display[i] == '_')
-    {
-      Serial.print('_');
-    }
-    else
-    {
-      Serial.print(" ");
-    }
-  }
-  Serial.println();
-  unsigned long currentSlice = 0;
-  unsigned short time = 5;
-  for (short i = 0; i < DISPLAY_LENGTH; i++)
-  {
-    currentSlice += summary->SliceDuration;
-    if ((currentSlice + summary->SliceDuration) % 5000 == 0)
-    {
-      Serial.print(time);
-      time += 5;
-    }
-    else
-    {
-      Serial.print(" ");
-    }
-  }
-  Serial.println();
-}
-
-void printStatus()
-{
-  if (!_summaryRuntimeManager.run())
-  {
-    return;
-  }
-
-  if (_pillow.inflated())
-  {
-    Serial.println("Inflated");
-  }
-  if (_pillow.deflated())
-  {
-    Serial.println("Deflated");
-  }
-
-  if (_pillow.running())
-  {
-    if (_pillow.intention() == INFLATING)
-    {
-      Serial.println("Inflating...");
-    }
-    else
-    {
-      Serial.println("Deflating...");
-    }
-  }
 }

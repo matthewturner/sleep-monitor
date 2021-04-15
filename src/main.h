@@ -12,6 +12,7 @@
 #include "HardwareMicrophone.h"
 #include "Pillow.h"
 #include "RuntimeManager.h"
+#include "Reporter.h"
 
 #define SOUND_DETECTED LOW
 #define END_STOP_TOP_PIN 12
@@ -22,8 +23,5 @@
 #define STEP_ENABLE_PIN 5
 #define MICROPHONE_PIN 10
 #define TRIGGER_PIN 2
-
-void printStatus();
-void printSummary(Summary *summary);
 
 #endif
