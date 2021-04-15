@@ -131,7 +131,8 @@ void Analyzer::analyze(Summary *summary)
 
     summary->AverageSoundDuration = averageSoundDuration(summary);
     summary->AverageSilenceDuration = averageSilenceDuration(summary);
-    summary->RhythmDetected = rhythmDetected(summary);
+    summary->Status = determineStatus(summary);
+    summary->RhythmDetected = rhythmDetected(summary->Status);
 }
 
 unsigned long Analyzer::averageSoundDuration(Summary *summary)
@@ -152,12 +153,31 @@ unsigned long Analyzer::averageSilenceDuration(Summary *summary)
     return (unsigned long)(summary->TotalSilenceDuration / (summary->Count - 1));
 }
 
-bool Analyzer::rhythmDetected(Summary *summary)
+unsigned short Analyzer::determineStatus(Summary *summary)
 {
-    bool sampleCountOk = (summary->Count >= _rhythmSampleThreshold);
-    bool soundDurationOk = (summary->AverageSoundDuration >= _soundDurationThreshold);
-    bool silenceDurationOk = (summary->AverageSilenceDuration >= _minSilenceDurationThreshold) && (summary->AverageSilenceDuration < _maxSilenceDurationThreshold);
-    return sampleCountOk && soundDurationOk && silenceDurationOk;
+    if (summary->Count < _rhythmSampleThreshold)
+    {
+        return INSUFFICIENT_SAMPLE_COUNT;
+    }
+    if (summary->AverageSoundDuration < _soundDurationThreshold)
+    {
+        return INSUFFICIENT_SOUND_DURATION;
+    }
+
+    if (summary->AverageSilenceDuration < _minSilenceDurationThreshold)
+    {
+        return INSUFFICIENT_SILENCE_DURATION;
+    }
+    if (summary->AverageSilenceDuration >= _maxSilenceDurationThreshold)
+    {
+        return EXCESSIVE_SILENCE_DURATION;
+    }
+    return RHYTHM_DETECTED;
+}
+
+bool Analyzer::rhythmDetected(unsigned short status)
+{
+    return (status == RHYTHM_DETECTED);
 }
 
 void Analyzer::clear()

@@ -13,6 +13,12 @@
 
 #define DISPLAY_LENGTH 100
 
+#define RHYTHM_DETECTED 0
+#define INSUFFICIENT_SAMPLE_COUNT 1
+#define INSUFFICIENT_SOUND_DURATION 2
+#define INSUFFICIENT_SILENCE_DURATION 3
+#define EXCESSIVE_SILENCE_DURATION 4
+
 struct summary
 {
     unsigned short Count;
@@ -20,6 +26,7 @@ struct summary
     unsigned long TotalSilenceDuration;
     unsigned long AverageSoundDuration;
     unsigned long AverageSilenceDuration;
+    unsigned short Status;
     bool RhythmDetected;
     char Display[DISPLAY_LENGTH];
     unsigned short SliceDuration;
@@ -40,6 +47,7 @@ public:
     void analyze(Summary *summary);
 
     void setRhythmThreshold(short newThreshold);
+    void setDurationThreshold(short newThreshold);
     void setSoundDurationThreshold(short newThreshold);
     void setSilenceDurationThreshold(short min, short max);
 
@@ -49,7 +57,8 @@ public:
 
 private:
     TimeProvider *_timeProvider;
-    bool rhythmDetected(Summary *summary);
+    bool rhythmDetected(unsigned short status);
+    unsigned short determineStatus(Summary *summary);
     unsigned long averageSoundDuration(Summary *summary);
     unsigned long averageSilenceDuration(Summary *summary);
 
