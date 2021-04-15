@@ -26,7 +26,7 @@ void setup()
   _stepper.setMaxSpeed(1000);
 
   _analyzer.setSilenceDurationThreshold(1500, 3000);
-  _analyzer.setSoundDurationThreshold(50);
+  _analyzer.setSoundDurationThreshold(50, 1000);
 
   _pillow.tryDeflate();
 
@@ -128,7 +128,7 @@ void printSummary(Summary *summary)
 
 void printStatus()
 {
-  if(!_summaryRuntimeManager.run())
+  if (!_summaryRuntimeManager.run())
   {
     return;
   }

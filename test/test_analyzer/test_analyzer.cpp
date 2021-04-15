@@ -7,7 +7,8 @@ Summary summary;
 
 void setUp(void)
 {
-    analyzer.setSoundDurationThreshold(40);
+    analyzer.setSampleThreshold(DEFAULT_MIN_SAMPLE_THRESHOLD, DEFAULT_MAX_SAMPLE_THRESHOLD);
+    analyzer.setSoundDurationThreshold(40, 200);
     analyzer.setSilenceDurationThreshold(350, 800);
     analyzer.clear();
 }
@@ -30,6 +31,7 @@ void test_summary_cleared(void)
 void test_no_rhythmic_sound_detected_empty(void)
 {
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -39,6 +41,7 @@ void test_no_rhythmic_sound_detected_frequency_high(void)
     analyzer.recordSound(20);
     analyzer.recordSound(30);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -49,6 +52,7 @@ void test_rhythmic_sound_detected_insufficient_samples(void)
     analyzer.recordSound(900);
     analyzer.recordSound(1300);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SAMPLE_COUNT, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -82,6 +86,7 @@ void test_rhythmic_sound_detected_silence_too_low(void)
     analyzer.recordSound(1700);
     analyzer.recordSound(1750);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SILENCE_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -236,18 +241,20 @@ void test_only_last_sound_is_stored_separated(void)
 
 void test_average_duration_threshold_not_met(void)
 {
-    analyzer.setSoundDurationThreshold(60);
+    analyzer.setSampleThreshold(1, 100);
+    analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(600);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(INSUFFICIENT_SOUND_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
 void test_average_sound_duration(void)
 {
-    analyzer.setSoundDurationThreshold(60);
+    analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
@@ -258,7 +265,7 @@ void test_average_sound_duration(void)
 
 void test_average_silence_duration_single(void)
 {
-    analyzer.setSoundDurationThreshold(60);
+    analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
@@ -269,7 +276,7 @@ void test_average_silence_duration_single(void)
 
 void test_average_silence_duration_multiple(void)
 {
-    analyzer.setSoundDurationThreshold(60);
+    analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
@@ -282,12 +289,27 @@ void test_average_silence_duration_multiple(void)
 
 void test_average_silence_duration_threshold_exceeded(void)
 {
+    analyzer.setSampleThreshold(1, 100);
     analyzer.setSilenceDurationThreshold(200, 300);
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
     analyzer.recordSound(650);
     analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(EXCESSIVE_SILENCE_DURATION, summary.Result);
+    TEST_ASSERT_FALSE(summary.RhythmDetected);
+}
+
+void test_average_sound_duration_threshold_exceeded(void)
+{
+    analyzer.setSampleThreshold(1, 100);
+    analyzer.setSoundDurationThreshold(1, 49);
+    analyzer.recordSound(100);
+    analyzer.recordSound(150);
+    analyzer.recordSound(550);
+    analyzer.recordSound(600);
+    analyzer.analyze(&summary);
+    TEST_ASSERT_EQUAL(EXCESSIVE_SOUND_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
@@ -436,6 +458,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_average_silence_duration_single);
     RUN_TEST(test_average_silence_duration_multiple);
     RUN_TEST(test_average_silence_duration_threshold_exceeded);
+    RUN_TEST(test_average_sound_duration_threshold_exceeded);
     RUN_TEST(test_display_is_initialized);
     RUN_TEST(test_display_shows_instant_sound);
     RUN_TEST(test_display_shows_single_sound);

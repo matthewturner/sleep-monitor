@@ -5,9 +5,10 @@ Analyzer::Analyzer(TimeProvider *timeProvider)
     _timeProvider = timeProvider;
 }
 
-void Analyzer::setRhythmThreshold(short newThreshold)
+void Analyzer::setSampleThreshold(short min, short max)
 {
-    _rhythmSampleThreshold = newThreshold;
+    _minSampleThreshold = min;
+    _maxSampleThreshold = max;
 }
 
 void Analyzer::setSilenceDurationThreshold(short min, short max)
@@ -16,9 +17,10 @@ void Analyzer::setSilenceDurationThreshold(short min, short max)
     _maxSilenceDurationThreshold = max;
 }
 
-void Analyzer::setSoundDurationThreshold(short newThreshold)
+void Analyzer::setSoundDurationThreshold(short min, short max)
 {
-    _soundDurationThreshold = newThreshold;
+    _minSoundDurationThreshold = min;
+    _maxSoundDurationThreshold = max;
 }
 
 void Analyzer::record(bool sound)
@@ -131,7 +133,8 @@ void Analyzer::analyze(Summary *summary)
 
     summary->AverageSoundDuration = averageSoundDuration(summary);
     summary->AverageSilenceDuration = averageSilenceDuration(summary);
-    summary->RhythmDetected = rhythmDetected(summary);
+    summary->Result = determineResult(summary);
+    summary->RhythmDetected = rhythmDetected(summary->Result);
 }
 
 unsigned long Analyzer::averageSoundDuration(Summary *summary)
@@ -152,12 +155,34 @@ unsigned long Analyzer::averageSilenceDuration(Summary *summary)
     return (unsigned long)(summary->TotalSilenceDuration / (summary->Count - 1));
 }
 
-bool Analyzer::rhythmDetected(Summary *summary)
+unsigned short Analyzer::determineResult(Summary *summary)
 {
-    bool sampleCountOk = (summary->Count >= _rhythmSampleThreshold);
-    bool soundDurationOk = (summary->AverageSoundDuration >= _soundDurationThreshold);
-    bool silenceDurationOk = (summary->AverageSilenceDuration >= _minSilenceDurationThreshold) && (summary->AverageSilenceDuration < _maxSilenceDurationThreshold);
-    return sampleCountOk && soundDurationOk && silenceDurationOk;
+    if (summary->Count < _minSampleThreshold)
+    {
+        return INSUFFICIENT_SAMPLE_COUNT;
+    }
+    if (summary->AverageSoundDuration < _minSoundDurationThreshold)
+    {
+        return INSUFFICIENT_SOUND_DURATION;
+    }
+    if (summary->AverageSoundDuration > _maxSoundDurationThreshold)
+    {
+        return EXCESSIVE_SOUND_DURATION;
+    }
+    if (summary->AverageSilenceDuration < _minSilenceDurationThreshold)
+    {
+        return INSUFFICIENT_SILENCE_DURATION;
+    }
+    if (summary->AverageSilenceDuration >= _maxSilenceDurationThreshold)
+    {
+        return EXCESSIVE_SILENCE_DURATION;
+    }
+    return RHYTHM_DETECTED;
+}
+
+bool Analyzer::rhythmDetected(unsigned short status)
+{
+    return (status == RHYTHM_DETECTED);
 }
 
 void Analyzer::clear()
