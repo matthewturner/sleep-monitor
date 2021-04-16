@@ -5,24 +5,24 @@ Analyzer::Analyzer(TimeProvider *timeProvider)
     _timeProvider = timeProvider;
 }
 
-void Analyzer::setDurationThreshold(short threshold)
+void Analyzer::setDurationThreshold(unsigned short threshold)
 {
     _durationThreshold = threshold;
 }
 
-void Analyzer::setSampleThreshold(short min, short max)
+void Analyzer::setSampleThreshold(unsigned short min, unsigned short max)
 {
     _minSampleThreshold = min;
     _maxSampleThreshold = max;
 }
 
-void Analyzer::setSilenceDurationThreshold(short min, short max)
+void Analyzer::setSilenceDurationThreshold(unsigned short min, unsigned short max)
 {
     _minSilenceDurationThreshold = min;
     _maxSilenceDurationThreshold = max;
 }
 
-void Analyzer::setSoundDurationThreshold(short min, short max)
+void Analyzer::setSoundDurationThreshold(unsigned short min, unsigned short max)
 {
     _minSoundDurationThreshold = min;
     _maxSoundDurationThreshold = max;
@@ -102,6 +102,10 @@ void Analyzer::analyze(Summary *summary)
         summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
     }
     unsigned long previousSound = 0;
+    unsigned short soundCount = 0;
+    unsigned short silenceCount = 0;
+    unsigned long soundDurations[50];
+    unsigned long silenceDurations[50];
     for (unsigned int i = 0; i < _counter; i++)
     {
         unsigned long currentSound = _samples[i];
@@ -126,39 +130,54 @@ void Analyzer::analyze(Summary *summary)
         if (previousSound != 0 && duration < CONTIGUOUS_SOUND_THRESHOLD)
         {
             summary->TotalSoundDuration += duration;
+            soundDurations[soundCount] = duration;
+            soundCount++;
         }
 
         if (previousSound != 0 && duration >= CONTIGUOUS_SOUND_THRESHOLD)
         {
             summary->TotalSilenceDuration += duration;
+            silenceDurations[silenceCount] = duration;
+            silenceCount++;
         }
 
         previousSound = currentSound;
     }
 
-    summary->TotalSilenceDuration = _timeProvider->now() - summary->TotalSoundDuration - firstSound;
-    summary->AverageSoundDuration = averageSoundDuration(summary);
-    summary->AverageSilenceDuration = averageSilenceDuration(summary);
+    unsigned long remainingSilenceDuration = _timeProvider->now() - previousSound;
+    if (remainingSilenceDuration > 0)
+    {
+        summary->TotalSilenceDuration += remainingSilenceDuration;
+        silenceDurations[silenceCount] = remainingSilenceDuration;
+        silenceCount++;
+    }
+
+    summary->AverageSoundDuration = averageSoundDuration(summary, soundCount);
+    summary->AverageSilenceDuration = averageSilenceDuration(summary, silenceCount);
+
+    summary->SoundStandardDeviation = standardDeviation(soundDurations, soundCount);
+    summary->SilenceStandardDeviation = standardDeviation(silenceDurations, silenceCount);
+
     summary->Result = determineResult(summary);
     summary->RhythmDetected = rhythmDetected(summary->Result);
 }
 
-unsigned long Analyzer::averageSoundDuration(Summary *summary)
+unsigned long Analyzer::averageSoundDuration(Summary *summary, unsigned short soundCount)
 {
-    if (summary->Count == 0)
+    if (soundCount == 0)
     {
         return 0;
     }
-    return (unsigned long)(summary->TotalSoundDuration / summary->Count);
+    return (unsigned long)(summary->TotalSoundDuration / soundCount);
 }
 
-unsigned long Analyzer::averageSilenceDuration(Summary *summary)
+unsigned long Analyzer::averageSilenceDuration(Summary *summary, unsigned short silenceCount)
 {
-    if (summary->Count <= 1)
+    if (silenceCount == 0)
     {
         return 0;
     }
-    return (unsigned long)(summary->TotalSilenceDuration / (summary->Count - 1));
+    return (unsigned long)(summary->TotalSilenceDuration / silenceCount);
 }
 
 unsigned short Analyzer::determineResult(Summary *summary)
@@ -183,7 +202,25 @@ unsigned short Analyzer::determineResult(Summary *summary)
     {
         return EXCESSIVE_SILENCE_DURATION;
     }
+    if (summary->SoundStandardDeviation >= _maxSoundStandardDeviation)
+    {
+        return EXCESSIVE_SOUND_DEVIATION;
+    }
+    if (summary->SilenceStandardDeviation >= _maxSilenceStandardDeviation)
+    {
+        return EXCESSIVE_SILENCE_DEVIATION;
+    }
     return RHYTHM_DETECTED;
+}
+
+void Analyzer::setMaxSoundStandardDeviation(unsigned short max)
+{
+    _maxSoundStandardDeviation = max;
+}
+
+void Analyzer::setMaxSilenceStandardDeviation(unsigned short max)
+{
+    _maxSilenceStandardDeviation = max;
 }
 
 bool Analyzer::rhythmDetected(unsigned short status)
@@ -199,4 +236,31 @@ void Analyzer::clear()
 short Analyzer::count()
 {
     return _counter;
+}
+
+double Analyzer::standardDeviation(unsigned long *samples, unsigned short size)
+{
+    if (size <= 1)
+    {
+        return 0;
+    }
+    return sqrt(variance(samples, size));
+}
+
+double Analyzer::variance(unsigned long *samples, unsigned short size)
+{
+    if (size <= 1)
+    {
+        return 0;
+    }
+    double variance = 0;
+    double t = samples[0];
+    for (unsigned short i = 1; i < size; i++)
+    {
+        t += samples[i];
+        double diff = ((i + 1) * samples[i]) - t;
+        variance += (diff * diff) / ((i + 1.0) * i);
+    }
+
+    return variance / (size - 1);
 }
