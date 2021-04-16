@@ -18,6 +18,10 @@ void Reporter::reportOn(Summary *summary)
     Serial.println(summary->AverageSoundDuration);
     Serial.print("\tAverage Silence Duration: ");
     Serial.println(summary->AverageSilenceDuration);
+    Serial.print("\tSound Duration Deviation: ");
+    Serial.println(summary->SoundStandardDeviation);
+    Serial.print("\tSilence Duration Deviation: ");
+    Serial.println(summary->SilenceStandardDeviation);
     Serial.print("\tRhythm Detected: ");
     Serial.println(summary->RhythmDetected);
 
@@ -42,6 +46,12 @@ void Reporter::reportOn(Summary *summary)
         break;
     case EXCESSIVE_SILENCE_DURATION:
         Serial.println("Excessive silence");
+        break;
+    case EXCESSIVE_SOUND_DEVIATION:
+        Serial.println("Excessive sound deviation");
+        break;
+    case EXCESSIVE_SILENCE_DEVIATION:
+        Serial.println("Excessive silence deviation");
         break;
     default:
         Serial.println("Unknown result");

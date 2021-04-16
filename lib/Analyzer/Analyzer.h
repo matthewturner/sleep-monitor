@@ -1,6 +1,7 @@
 #ifndef Analyzer_h
 #define Analyzer_h
 
+#include <math.h>
 #include "TimeProvider.h"
 
 #define SAMPLE_BUFFER_COUNT 200
@@ -12,6 +13,8 @@
 #define DEFAULT_MAX_SOUND_DURATION_THRESHOLD 600
 #define DEFAULT_MIN_SILENCE_DURATION_THRESHOLD 2000
 #define DEFAULT_MAX_SILENCE_DURATION_THRESHOLD 3000
+#define DEFAULT_MAX_SOUND_STANDARD_DEVIATION 300
+#define DEFAULT_MAX_SILENCE_STANDARD_DEVIATION 2000
 
 #define DISPLAY_LENGTH 100
 
@@ -21,6 +24,8 @@
 #define EXCESSIVE_SOUND_DURATION 3
 #define INSUFFICIENT_SILENCE_DURATION 4
 #define EXCESSIVE_SILENCE_DURATION 5
+#define EXCESSIVE_SOUND_DEVIATION 6
+#define EXCESSIVE_SILENCE_DEVIATION 7
 
 struct summary
 {
@@ -29,6 +34,8 @@ struct summary
     unsigned long TotalSilenceDuration;
     unsigned long AverageSoundDuration;
     unsigned long AverageSilenceDuration;
+    double SoundStandardDeviation;
+    double SilenceStandardDeviation;
     unsigned short Result;
     bool RhythmDetected;
     char Display[DISPLAY_LENGTH];
@@ -49,10 +56,13 @@ public:
 
     void analyze(Summary *summary);
 
-    void setSampleThreshold(short min, short max);
-    void setDurationThreshold(short threshold);
-    void setSoundDurationThreshold(short min, short max);
-    void setSilenceDurationThreshold(short min, short max);
+    void setSampleThreshold(unsigned short min, unsigned short max);
+    void setDurationThreshold(unsigned short threshold);
+    void setSoundDurationThreshold(unsigned short min, unsigned short max);
+    void setSilenceDurationThreshold(unsigned short min, unsigned short max);
+
+    void setMaxSoundStandardDeviation(unsigned short max);
+    void setMaxSilenceStandardDeviation(unsigned short max);
 
     void clear();
 
@@ -62,8 +72,11 @@ private:
     TimeProvider *_timeProvider;
     bool rhythmDetected(unsigned short status);
     unsigned short determineResult(Summary *summary);
-    unsigned long averageSoundDuration(Summary *summary);
-    unsigned long averageSilenceDuration(Summary *summary);
+    unsigned long averageSoundDuration(Summary *summary, unsigned short soundCount);
+    unsigned long averageSilenceDuration(Summary *summary, unsigned short silenceCount);
+
+    double standardDeviation(unsigned long *samples, unsigned short size);
+    double variance(unsigned long *samples, unsigned short size);
 
     unsigned long _samples[SAMPLE_BUFFER_COUNT];
     unsigned int _counter = 0;
@@ -74,6 +87,8 @@ private:
     unsigned short _maxSoundDurationThreshold = DEFAULT_MAX_SOUND_DURATION_THRESHOLD;
     unsigned short _minSilenceDurationThreshold = DEFAULT_MIN_SILENCE_DURATION_THRESHOLD;
     unsigned short _maxSilenceDurationThreshold = DEFAULT_MAX_SILENCE_DURATION_THRESHOLD;
+    unsigned short _maxSoundStandardDeviation = DEFAULT_MAX_SOUND_STANDARD_DEVIATION;
+    unsigned short _maxSilenceStandardDeviation = DEFAULT_MAX_SILENCE_STANDARD_DEVIATION;
 };
 
 #endif
