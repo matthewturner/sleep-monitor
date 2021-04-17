@@ -26,6 +26,8 @@ void Reporter::reportOn(Summary *summary)
     Serial.println(summary->RhythmDetected);
 
     Serial.print("\tResult: ");
+    Serial.print(summary->Result);
+    Serial.print(" ");
 
     switch (summary->Result)
     {
@@ -33,7 +35,7 @@ void Reporter::reportOn(Summary *summary)
         Serial.println("Rhythm detected");
         break;
     case INSUFFICIENT_SAMPLE_COUNT:
-        Serial.println("Insufficient sample cound");
+        Serial.println("Insufficient sample count");
         break;
     case INSUFFICIENT_SOUND_DURATION:
         Serial.println("Insufficient sound");
