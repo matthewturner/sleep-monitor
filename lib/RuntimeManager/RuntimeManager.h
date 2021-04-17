@@ -12,7 +12,7 @@ class RuntimeManager
 {
 public:
     RuntimeManager(TimeProvider *timeProvider);
-    RuntimeManager(TimeProvider *timeProvider, unsigned int maxRuntime, unsigned long maxWaitTime);
+    RuntimeManager(TimeProvider *timeProvider, unsigned int maxRuntime, unsigned long minWaitTime);
 
     void setCurrentTime(unsigned long time);
 
