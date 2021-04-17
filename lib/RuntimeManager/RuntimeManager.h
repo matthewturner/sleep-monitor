@@ -3,8 +3,10 @@
 
 #include "TimeProvider.h"
 
-#define MAX_RUNTIME 20000
-#define MIN_WAIT_TIME 10000
+#define MINUTES 60 * 1000
+
+#define DEFAULT_MAX_RUNTIME 20000
+#define DEFAULT_MIN_WAIT_TIME 10000
 
 class RuntimeManager
 {
@@ -20,12 +22,14 @@ public:
 
     void reset();
 
+    void waitFromNow();
+
 private:
     TimeProvider *_timeProvider;
     unsigned long _startRuntime = 0;
     unsigned long _lastRuntime = 0;
-    unsigned int _maxRuntime = MAX_RUNTIME;
-    unsigned int _minWaitTime = MIN_WAIT_TIME;
+    unsigned int _maxRuntime = DEFAULT_MAX_RUNTIME;
+    unsigned int _minWaitTime = DEFAULT_MIN_WAIT_TIME;
 };
 
 #endif

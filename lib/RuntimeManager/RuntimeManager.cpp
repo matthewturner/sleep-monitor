@@ -48,3 +48,10 @@ void RuntimeManager::reset()
     _startRuntime = 0;
     _lastRuntime = 0;
 }
+
+void RuntimeManager::waitFromNow()
+{
+    unsigned long currentTime = _timeProvider->now();
+    _startRuntime = currentTime;
+    _lastRuntime = currentTime;
+}

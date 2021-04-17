@@ -53,6 +53,28 @@ void test_run_returns_true_if_runtime_zero_and_wait_time_reached(void)
     TEST_ASSERT_TRUE(runtimeManager.run());
 }
 
+void test_wait_from_now_does_not_run_on_next(void)
+{
+    runtimeManager.setMaxRuntime(0);
+    runtimeManager.setMinWaitTime(10);
+    TEST_ASSERT_TRUE(runtimeManager.run());
+    runtimeManager.setCurrentTime(2);
+    runtimeManager.waitFromNow();
+    runtimeManager.setCurrentTime(12);
+    TEST_ASSERT_FALSE(runtimeManager.run());
+}
+
+void test_wait_from_now_runs_on_next(void)
+{
+    runtimeManager.setMaxRuntime(0);
+    runtimeManager.setMinWaitTime(10);
+    TEST_ASSERT_TRUE(runtimeManager.run());
+    runtimeManager.setCurrentTime(2);
+    runtimeManager.waitFromNow();
+    runtimeManager.setCurrentTime(13);
+    TEST_ASSERT_TRUE(runtimeManager.run());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -61,6 +83,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_run_returns_true_if_wait_time_exceeded);
     RUN_TEST(test_run_returns_false_if_runtime_zero_and_wait_time_not_reached);
     RUN_TEST(test_run_returns_true_if_runtime_zero_and_wait_time_reached);
+    RUN_TEST(test_wait_from_now_does_not_run_on_next);
+    RUN_TEST(test_wait_from_now_runs_on_next);
     UNITY_END();
 
     return 0;
