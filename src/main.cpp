@@ -29,6 +29,10 @@ void setup()
 
   _pillow.tryDeflate();
 
+  delay(10);
+  _timeProvider.set(millis());
+  _autoInflater.waitFromNow();
+
   Serial.println("Setup complete. Continuing...");
 }
 
@@ -50,6 +54,7 @@ void loop()
 
   if (_autoInflater.run())
   {
+    Serial.println("Auto-inflating...");
     _autoInflater.setMinWaitTime(SUBSEQUENT_AUTO_INFLATE_WAIT_TIME);
     _pillow.tryInflate();
   }

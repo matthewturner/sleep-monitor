@@ -38,6 +38,10 @@ void Analyzer::record(bool sound)
 
 void Analyzer::recordSound(unsigned long time)
 {
+    if (_counter >= SAMPLE_BUFFER_COUNT)
+    {
+        return;
+    }
     // 200    n xxx => 200 xxx
     if (_counter <= 1)
     {
@@ -104,8 +108,8 @@ void Analyzer::analyze(Summary *summary)
     unsigned long previousSound = 0;
     unsigned short soundCount = 0;
     unsigned short silenceCount = 0;
-    unsigned long soundDurations[50];
-    unsigned long silenceDurations[50];
+    unsigned long soundDurations[70];
+    unsigned long silenceDurations[70];
     for (unsigned int i = 0; i < _counter; i++)
     {
         unsigned long currentSound = _samples[i];
@@ -129,16 +133,22 @@ void Analyzer::analyze(Summary *summary)
 
         if (previousSound != 0 && duration < CONTIGUOUS_SOUND_THRESHOLD)
         {
-            summary->TotalSoundDuration += duration;
-            soundDurations[soundCount] = duration;
-            soundCount++;
+            if (soundCount < MAX_SAMPLE_COUNT)
+            {
+                summary->TotalSoundDuration += duration;
+                soundDurations[soundCount] = duration;
+                soundCount++;
+            }
         }
 
         if (previousSound != 0 && duration >= CONTIGUOUS_SOUND_THRESHOLD)
         {
-            summary->TotalSilenceDuration += duration;
-            silenceDurations[silenceCount] = duration;
-            silenceCount++;
+            if (silenceCount < MAX_SAMPLE_COUNT)
+            {
+                summary->TotalSilenceDuration += duration;
+                silenceDurations[silenceCount] = duration;
+                silenceCount++;
+            }
         }
 
         previousSound = currentSound;
