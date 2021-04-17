@@ -29,6 +29,9 @@ void setup()
 
   _pillow.tryDeflate();
 
+  _timeProvider.set(millis());
+  _autoInflater.waitFromNow();
+
   Serial.println("Setup complete. Continuing...");
 }
 
