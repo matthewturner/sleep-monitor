@@ -5,6 +5,13 @@ RuntimeManager::RuntimeManager(TimeProvider *timeProvider)
     _timeProvider = timeProvider;
 }
 
+RuntimeManager::RuntimeManager(TimeProvider *timeProvider, unsigned int maxRuntime, unsigned long minWaitTime)
+    : RuntimeManager(timeProvider)
+{
+    _maxRuntime = maxRuntime;
+    _minWaitTime = minWaitTime;
+}
+
 void RuntimeManager::setCurrentTime(unsigned long time)
 {
     _timeProvider->set(time);
@@ -15,7 +22,7 @@ void RuntimeManager::setMaxRuntime(unsigned int maxRuntime)
     _maxRuntime = maxRuntime;
 }
 
-void RuntimeManager::setMinWaitTime(unsigned int minWaitTime)
+void RuntimeManager::setMinWaitTime(unsigned long minWaitTime)
 {
     _minWaitTime = minWaitTime;
 }
@@ -47,4 +54,11 @@ void RuntimeManager::reset()
 {
     _startRuntime = 0;
     _lastRuntime = 0;
+}
+
+void RuntimeManager::waitFromNow()
+{
+    unsigned long currentTime = _timeProvider->now();
+    _startRuntime = currentTime;
+    _lastRuntime = currentTime;
 }
