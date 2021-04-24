@@ -3,6 +3,7 @@
 
 #include "EndStop.h"
 #include "Stepper.h"
+#include "IValve.h"
 
 #define DEFLATING 1
 #define INFLATING -1
@@ -11,7 +12,7 @@
 class Pillow
 {
 public:
-    Pillow(EndStop *top, EndStop *bottom, Stepper *stepper);
+    Pillow(EndStop *top, EndStop *bottom, Stepper *stepper, IValve *valve);
 
     bool deflated();
     bool inflated();
@@ -35,6 +36,7 @@ private:
     EndStop *_endStopTop;
     EndStop *_endStopBottom;
     Stepper *_stepper;
+    IValve *_valve;
     short _action = DEFLATING;
 };
 

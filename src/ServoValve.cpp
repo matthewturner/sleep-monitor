@@ -1,6 +1,6 @@
 #include "ServoValve.h"
 
-ServoValve::ServoValve(Servo servo)
+ServoValve::ServoValve(Servo *servo)
 {
     _servo = servo;
 }
