@@ -16,8 +16,8 @@
 #include "RuntimeManager.h"
 #include "Reporter.h"
 
-#define INITIAL_AUTO_INFLATE_WAIT_TIME (unsigned long)20 * MINUTES
-#define SUBSEQUENT_AUTO_INFLATE_WAIT_TIME (unsigned long)5 * MINUTES
+#define INITIAL_AUTO_INFLATE_WAIT_TIME (unsigned long)30 * MINUTES
+#define SUBSEQUENT_AUTO_INFLATE_WAIT_TIME (unsigned long)10 * MINUTES
 
 #define END_STOP_TOP_PIN 12
 #define END_STOP_BOTTOM_PIN 11
