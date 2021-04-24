@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <AccelStepper.h>
+#include <Servo.h>
 #include "Analyzer.h"
 #include "Trigger.h"
 #include "Stepper.h"
@@ -25,5 +26,6 @@
 #define STEP_ENABLE_PIN 5
 #define MICROPHONE_PIN 10
 #define TRIGGER_PIN 2
+#define VALVE_PIN 8
 
 #endif

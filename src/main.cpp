@@ -15,11 +15,15 @@ Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
 RuntimeManager _summaryRuntimeManager(&_timeProvider, 0, 2000);
 Reporter _reporter(&_summaryRuntimeManager);
 RuntimeManager _autoInflater(&_timeProvider, 0, INITIAL_AUTO_INFLATE_WAIT_TIME);
+Servo _valveServo;
+ServoValve _valve(&_valveServo);
 
 void setup()
 {
   Serial.begin(9600);
   pinMode(13, OUTPUT);
+
+  _valveServo.attach(VALVE_PIN);
 
   _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);
@@ -27,6 +31,7 @@ void setup()
   _analyzer.setSilenceDurationThreshold(1500, 3000);
   _analyzer.setSoundDurationThreshold(50, 1000);
 
+  _valve.open();
   _pillow.tryDeflate();
 
   delay(10);
