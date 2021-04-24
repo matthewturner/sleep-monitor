@@ -4,8 +4,8 @@
 #include "IValve.h"
 #include <Servo.h>
 
-#define OPEN_ANGLE 10
-#define CLOSED_ANGLE 100
+#define OPEN_ANGLE 131
+#define CLOSED_ANGLE 45
 
 class ServoValve : public IValve
 {
