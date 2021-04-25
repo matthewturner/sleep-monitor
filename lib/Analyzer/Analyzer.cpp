@@ -38,29 +38,20 @@ void Analyzer::record(bool sound)
 
 void Analyzer::recordSound(unsigned long time)
 {
-    if (_counter >= SAMPLE_BUFFER_COUNT)
+    if (_counter == 0)
     {
-        return;
+        _start = time;
     }
-    // 200    n xxx => 200 xxx
-    if (_counter <= 1)
-    {
-        _samples[_counter] = time;
-        _counter++;
-        return;
-    }
-    // 300 400    n 601 => 300 400 601
-    // need to make contiguous sound
-    // by maintaining an intervening mark
-    if (time - _samples[_counter - 2] > CONTIGUOUS_SOUND_THRESHOLD)
-    {
-        _samples[_counter] = time;
-        _counter++;
-        return;
-    }
-    // 200 300    n 400 => 200 400
-    // overwrite the previous value
-    _samples[_counter - 1] = time;
+
+    short index = indexFor(time);
+    _samples[index] = true;
+}
+
+short Analyzer::indexFor(unsigned long time)
+{
+    unsigned long timeSinceStart = time - _start;
+    short index = (short)(timeSinceStart / SAMPLE_BUFFER_COUNT);
+    return index;
 }
 
 bool Analyzer::analysisRequired()
@@ -73,7 +64,7 @@ bool Analyzer::analysisRequired()
     {
         return true;
     }
-    if ((_timeProvider->now() - _samples[0]) > _durationThreshold)
+    if ((_timeProvider->now() - _start) > _durationThreshold)
     {
         return true;
     }
@@ -87,43 +78,17 @@ void Analyzer::analyze(Summary *summary)
     summary->AverageSilenceDuration = 0;
     summary->TotalSoundDuration = 0;
     summary->TotalSilenceDuration = 0;
+    summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
 
-    for (int i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        summary->Display[i] = '_';
-    }
-
-    unsigned long firstSound = 0;
-    summary->SliceDuration = 0;
-    if (_counter == 1)
-    {
-        summary->Display[0] = '|';
-    }
-
-    if (_counter > 0)
-    {
-        firstSound = _samples[0];
-        summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
-    }
-    unsigned long previousSound = 0;
+    unsigned short currentSound = 0;
+    unsigned short previousSound = 0;
     unsigned short soundCount = 0;
     unsigned short silenceCount = 0;
-    unsigned long soundDurations[70];
-    unsigned long silenceDurations[70];
-    for (unsigned int i = 0; i < _counter; i++)
+    unsigned short soundDurations[70];
+    unsigned short silenceDurations[70];
+    for (unsigned short i = 0; i < _counter; i++)
     {
-        unsigned long currentSound = _samples[i];
-        if (currentSound == 0)
-        {
-            continue;
-        }
-
-        if (summary->SliceDuration > 0)
-        {
-            unsigned short displayIndexForSound = (unsigned short)((currentSound - firstSound) / summary->SliceDuration);
-            summary->Display[displayIndexForSound] = '|';
-        }
-
+        currentSound = (i * SLICE_DURATION);
         unsigned long duration = currentSound - previousSound;
 
         if (previousSound == 0 || duration >= CONTIGUOUS_SOUND_THRESHOLD)
@@ -240,7 +205,12 @@ bool Analyzer::rhythmDetected(unsigned short status)
 
 void Analyzer::clear()
 {
+    for (short i = 0; i < _counter; i++)
+    {
+        _samples[i] = false;
+    }
     _counter = 0;
+    _start = 0;
 }
 
 short Analyzer::count()
@@ -248,7 +218,7 @@ short Analyzer::count()
     return _counter;
 }
 
-double Analyzer::standardDeviation(unsigned long *samples, unsigned short size)
+double Analyzer::standardDeviation(unsigned short *samples, unsigned short size)
 {
     if (size <= 1)
     {
@@ -257,7 +227,7 @@ double Analyzer::standardDeviation(unsigned long *samples, unsigned short size)
     return sqrt(variance(samples, size));
 }
 
-double Analyzer::variance(unsigned long *samples, unsigned short size)
+double Analyzer::variance(unsigned short *samples, unsigned short size)
 {
     if (size <= 1)
     {

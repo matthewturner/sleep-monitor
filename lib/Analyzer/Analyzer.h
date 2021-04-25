@@ -5,11 +5,12 @@
 #include "TimeProvider.h"
 
 #define SAMPLE_BUFFER_COUNT 200
+#define DEFAULT_DURATION_THRESHOLD 20000
+#define SLICE_DURATION DEFAULT_DURATION_THRESHOLD / SAMPLE_BUFFER_COUNT
 #define MAX_SAMPLE_COUNT 70
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
 #define DEFAULT_MAX_SAMPLE_THRESHOLD 40
-#define DEFAULT_DURATION_THRESHOLD 20000
 #define DEFAULT_MIN_SOUND_DURATION_THRESHOLD 50
 #define DEFAULT_MAX_SOUND_DURATION_THRESHOLD 600
 #define DEFAULT_MIN_SILENCE_DURATION_THRESHOLD 2000
@@ -76,10 +77,13 @@ private:
     unsigned long averageSoundDuration(Summary *summary, unsigned short soundCount);
     unsigned long averageSilenceDuration(Summary *summary, unsigned short silenceCount);
 
-    double standardDeviation(unsigned long *samples, unsigned short size);
-    double variance(unsigned long *samples, unsigned short size);
+    double standardDeviation(unsigned short *samples, unsigned short size);
+    double variance(unsigned short *samples, unsigned short size);
 
-    unsigned long _samples[SAMPLE_BUFFER_COUNT];
+    short indexFor(unsigned long time);
+
+    bool _samples[SAMPLE_BUFFER_COUNT];
+    unsigned long _start = 0;
     unsigned int _counter = 0;
     unsigned short _minSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
     unsigned short _maxSampleThreshold = DEFAULT_MAX_SAMPLE_THRESHOLD;
