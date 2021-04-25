@@ -11,7 +11,9 @@ HardwareEndStop _endStopTop(END_STOP_TOP_PIN);
 HardwareEndStop _endStopBottom(END_STOP_BOTTOM_PIN);
 RuntimeManager _runtimeManager(&_timeProvider);
 HardwareStepper _stepperAdapter(&_stepper, &_runtimeManager);
-Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter);
+Servo _valveServo;
+ServoValve _valve(&_valveServo);
+Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter, &_valve);
 RuntimeManager _summaryRuntimeManager(&_timeProvider, 0, 2000);
 Reporter _reporter(&_summaryRuntimeManager);
 RuntimeManager _autoInflater(&_timeProvider, 0, INITIAL_AUTO_INFLATE_WAIT_TIME);
@@ -20,6 +22,8 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(13, OUTPUT);
+
+  _valveServo.attach(VALVE_PIN);
 
   _stepperAdapter.setEnablePin(STEP_ENABLE_PIN);
   _stepper.setMaxSpeed(1000);

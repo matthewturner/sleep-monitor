@@ -2,12 +2,14 @@
 #include "Stepper.h"
 #include "SoftwareEndStop.h"
 #include "SoftwareStepper.h"
+#include "SoftwareValve.h"
 #include "Pillow.h"
 
 SoftwareEndStop endStopTop;
 SoftwareEndStop endStopBottom;
 SoftwareStepper stepper;
-Pillow pillow(&endStopTop, &endStopBottom, &stepper);
+SoftwareValve valve;
+Pillow pillow(&endStopTop, &endStopBottom, &stepper, &valve);
 
 void setUp(void)
 {
@@ -15,6 +17,7 @@ void setUp(void)
     endStopBottom.setReading(false);
     stepper.disable();
     stepper.reset();
+    valve.reset();
 }
 
 void test_start_sets_intention(void)
@@ -183,6 +186,38 @@ void test_state_returns_deflating(void)
     TEST_ASSERT_EQUAL(DEFLATING, pillow.state());
 }
 
+void test_try_deflate_opens_valve(void)
+{
+    pillow.tryDeflate();
+    TEST_ASSERT_EQUAL(OPEN, valve.state());
+}
+
+void test_try_inflate_opens_valve(void)
+{
+    pillow.tryInflate();
+    TEST_ASSERT_EQUAL(OPEN, valve.state());
+}
+
+void test_start_opens_valve(void)
+{
+    pillow.start(INFLATING);
+    TEST_ASSERT_EQUAL(OPEN, valve.state());
+}
+
+void test_stop_closes_valve_if_partially_inflated(void)
+{
+    pillow.stop();
+    TEST_ASSERT_EQUAL(CLOSED, valve.state());
+}
+
+void test_stop_leaves_valve_open_if_fully_deflated(void)
+{
+    valve.open();
+    endStopTop.setReading(true);
+    pillow.stop();
+    TEST_ASSERT_EQUAL(OPEN, valve.state());
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -210,6 +245,11 @@ int main(int argc, char **argv)
     RUN_TEST(test_state_returns_stopped);
     RUN_TEST(test_state_returns_inflating);
     RUN_TEST(test_state_returns_deflating);
+    RUN_TEST(test_try_deflate_opens_valve);
+    RUN_TEST(test_try_inflate_opens_valve);
+    RUN_TEST(test_start_opens_valve);
+    RUN_TEST(test_stop_closes_valve_if_partially_inflated);
+    RUN_TEST(test_stop_leaves_valve_open_if_fully_deflated);
     UNITY_END();
 
     return 0;

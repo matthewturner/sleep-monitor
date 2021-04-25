@@ -1,10 +1,11 @@
 #include "Pillow.h"
 
-Pillow::Pillow(EndStop *top, EndStop *bottom, Stepper *stepper)
+Pillow::Pillow(EndStop *top, EndStop *bottom, Stepper *stepper, IValve *valve)
 {
     _endStopTop = top;
     _endStopBottom = bottom;
     _stepper = stepper;
+    _valve = valve;
 }
 
 bool Pillow::deflated()
@@ -36,6 +37,7 @@ void Pillow::start(short newAction)
     _action = newAction;
     _stepper->setSpeed(_action * 500);
     _stepper->enable();
+    _valve->open();
 }
 
 bool Pillow::tryInflate()
@@ -63,6 +65,10 @@ bool Pillow::tryDeflate()
 void Pillow::stop()
 {
     _stepper->disable();
+    if (!deflated())
+    {
+        _valve->close();
+    }
 }
 
 bool Pillow::stopped()
