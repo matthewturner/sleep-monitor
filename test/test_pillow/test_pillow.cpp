@@ -1,6 +1,6 @@
 #include <unity.h>
 #include "Stepper.h"
-#include "SoftwareEndStop.h"
+#include "../test_endstop/SoftwareEndStop.h"
 #include "SoftwareStepper.h"
 #include "SoftwareValve.h"
 #include "Pillow.h"
