@@ -31,7 +31,6 @@ void setup()
   _analyzer.setSilenceDurationThreshold(1500, 3000);
   _analyzer.setSoundDurationThreshold(50, 1000);
 
-  _valve.open();
   _pillow.tryDeflate();
 
   delay(10);
