@@ -49,7 +49,7 @@ void Analyzer::recordSound(unsigned long time)
 
 unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
 {
-    unsigned short indexForDisplay = (unsigned short)(sliceIndex / SLICE_DURATION);
+    unsigned short indexForDisplay = (unsigned short)(sliceIndex / 20);
     return indexForDisplay;
 }
 

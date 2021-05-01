@@ -377,7 +377,7 @@ void test_display_shows_single_long_sound(void)
 {
     analyzer.recordSound(100);
     analyzer.recordSound(200);
-    analyzer.recordSound(299);
+    analyzer.recordSound(301);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -391,7 +391,7 @@ void test_display_shows_single_long_sound(void)
 void test_display_shows_single_long_sound_beyond_slice_duration(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(201);
+    analyzer.recordSound(301);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -405,9 +405,9 @@ void test_display_shows_single_long_sound_beyond_slice_duration(void)
 void test_display_shows_multiple_long_sound_beyond_slice_duration(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(200);
-    analyzer.recordSound(401);
-    analyzer.recordSound(601);
+    analyzer.recordSound(301);
+    analyzer.recordSound(701);
+    analyzer.recordSound(901);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -454,9 +454,9 @@ void test_display_shows_multiple_long_sound_realistic(void)
 void test_sound_zero_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(600);
+    analyzer.recordSound(599);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(50, summary.AverageSoundDuration);
     TEST_ASSERT_EQUAL(0, summary.SoundStandardDeviation);
@@ -465,9 +465,9 @@ void test_sound_zero_standard_deviation(void)
 void test_basic_sound_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(75, summary.AverageSoundDuration);
     TEST_ASSERT_EQUAL(35, summary.SoundStandardDeviation);
@@ -476,11 +476,11 @@ void test_basic_sound_standard_deviation(void)
 void test_multiple_sound_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.recordSound(1000);
-    analyzer.recordSound(1050);
+    analyzer.recordSound(1049);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(66, summary.AverageSoundDuration);
     TEST_ASSERT_EQUAL(28, summary.SoundStandardDeviation);
@@ -493,11 +493,11 @@ void test_excessive_sound_standard_deviation(void)
     analyzer.setSilenceDurationThreshold(1, 1000);
     analyzer.setMaxSoundStandardDeviation(27);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.recordSound(1000);
-    analyzer.recordSound(1050);
+    analyzer.recordSound(1049);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(66, summary.AverageSoundDuration);
     TEST_ASSERT_EQUAL(28, summary.SoundStandardDeviation);
@@ -507,9 +507,9 @@ void test_excessive_sound_standard_deviation(void)
 void test_silence_zero_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     timeProvider.set(1050);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(400, summary.AverageSilenceDuration);
@@ -519,9 +519,9 @@ void test_silence_zero_standard_deviation(void)
 void test_basic_silence_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     timeProvider.set(1000);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(375, summary.AverageSilenceDuration);
@@ -531,11 +531,11 @@ void test_basic_silence_standard_deviation(void)
 void test_multiple_silence_standard_deviation(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.recordSound(1000);
-    analyzer.recordSound(1050);
+    analyzer.recordSound(1049);
     timeProvider.set(1150);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(283, summary.AverageSilenceDuration);
@@ -548,11 +548,11 @@ void test_silence_standard_deviation_exceeded(void)
     analyzer.setSilenceDurationThreshold(1, 1000);
     analyzer.setMaxSilenceStandardDeviation(150);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.recordSound(1000);
-    analyzer.recordSound(1050);
+    analyzer.recordSound(1049);
     timeProvider.set(1150);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(283, summary.AverageSilenceDuration);
