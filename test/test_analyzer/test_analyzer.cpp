@@ -406,8 +406,8 @@ void test_display_shows_multiple_long_sound_beyond_slice_duration(void)
 {
     analyzer.recordSound(100);
     analyzer.recordSound(301);
-    analyzer.recordSound(701);
-    analyzer.recordSound(901);
+    analyzer.recordSound(700);
+    analyzer.recordSound(1000);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
