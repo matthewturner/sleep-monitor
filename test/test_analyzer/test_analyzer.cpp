@@ -9,7 +9,7 @@ void setUp(void)
 {
     analyzer.setSampleThreshold(DEFAULT_MIN_SAMPLE_THRESHOLD, DEFAULT_MAX_SAMPLE_THRESHOLD);
     analyzer.setSoundDurationThreshold(40, 200);
-    analyzer.setSilenceDurationThreshold(350, 800);
+    analyzer.setSilenceDurationThreshold(340, 800);
     analyzer.setMaxSoundStandardDeviation(10000);
     analyzer.setMaxSilenceStandardDeviation(10000);
     analyzer.clear();
@@ -24,9 +24,9 @@ void test_summary_cleared(void)
     summary.TotalSilenceDuration = 99;
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(0, summary.SoundCount);
-    TEST_ASSERT_EQUAL(DEFAULT_DURATION_THRESHOLD, summary.AverageSilenceDuration);
+    TEST_ASSERT_EQUAL(0, summary.AverageSilenceDuration);
     TEST_ASSERT_EQUAL(0, summary.AverageSoundDuration);
-    TEST_ASSERT_EQUAL(DEFAULT_DURATION_THRESHOLD, summary.TotalSilenceDuration);
+    TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
     TEST_ASSERT_EQUAL(0, summary.TotalSoundDuration);
 }
 

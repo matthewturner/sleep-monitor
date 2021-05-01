@@ -74,7 +74,7 @@ bool Analyzer::analysisRequired()
 void Analyzer::preProcess()
 {
     short indexOfLastSound = -1;
-    for (short i = 0; i < _index; i++)
+    for (short i = 0; i <= _index; i++)
     {
         if (_samples[i])
         {
@@ -100,6 +100,9 @@ void Analyzer::analyze(Summary *summary)
     summary->TotalSoundDuration = 0;
     summary->TotalSilenceDuration = 0;
     summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
+    summary->SoundStandardDeviation = 0;
+    summary->SilenceStandardDeviation = 0;
+    summary->Result = UNKNOWN;
 
     preProcess();
 
@@ -107,7 +110,7 @@ void Analyzer::analyze(Summary *summary)
     bool withinSilence = false;
     unsigned short soundDurations[70];
     unsigned short silenceDurations[70];
-    for (short i = 0; i < _index; i++)
+    for (short i = 0; i <= _index; i++)
     {
         if (_samples[i])
         {
@@ -131,12 +134,15 @@ void Analyzer::analyze(Summary *summary)
         }
     }
 
-    if (_index < SAMPLE_BUFFER_COUNT - 1)
+    if (_index != -1 && _index < SAMPLE_BUFFER_COUNT - 1)
     {
-        unsigned long remainingSilenceDuration = (SAMPLE_BUFFER_COUNT - _index - 1) * SLICE_DURATION;
+        unsigned short remainingSilenceDuration = _timeProvider->now() - _start - (_index * SLICE_DURATION);
         summary->TotalSilenceDuration += remainingSilenceDuration;
         silenceDurations[summary->SilenceCount] = remainingSilenceDuration;
-        summary->SilenceCount++;
+        if (remainingSilenceDuration > 0 && !withinSilence)
+        {
+            summary->SilenceCount++;
+        }
     }
 
     summary->AverageSoundDuration = averageSoundDuration(summary);
