@@ -38,29 +38,29 @@ void Analyzer::record(bool sound)
 
 void Analyzer::recordSound(unsigned long time)
 {
-    if (_counter == 0)
+    if (_index == -1)
     {
         _start = time;
     }
 
-    short index = indexFor(time);
-    _samples[index] = true;
+    _index = indexFor(time);
+    _samples[_index] = true;
 }
 
 short Analyzer::indexFor(unsigned long time)
 {
     unsigned long timeSinceStart = time - _start;
-    short index = (short)(timeSinceStart / SAMPLE_BUFFER_COUNT);
+    short index = (short)(timeSinceStart / SLICE_DURATION);
     return index;
 }
 
 bool Analyzer::analysisRequired()
 {
-    if (_counter == 0)
+    if (_index == -1)
     {
         return false;
     }
-    if (_counter >= SAMPLE_BUFFER_COUNT)
+    if (_index >= SAMPLE_BUFFER_COUNT)
     {
         return true;
     }
@@ -86,9 +86,9 @@ void Analyzer::analyze(Summary *summary)
     unsigned short silenceCount = 0;
     unsigned short soundDurations[70];
     unsigned short silenceDurations[70];
-    for (unsigned short i = 0; i < _counter; i++)
+    for (short i = 0; i < _index; i++)
     {
-        currentSound = (i * SLICE_DURATION);
+        currentSound = (i + 1) * SLICE_DURATION;
         unsigned long duration = currentSound - previousSound;
 
         if (previousSound == 0 || duration >= CONTIGUOUS_SOUND_THRESHOLD)
@@ -205,17 +205,17 @@ bool Analyzer::rhythmDetected(unsigned short status)
 
 void Analyzer::clear()
 {
-    for (short i = 0; i < _counter; i++)
+    for (short i = 0; i <= _index; i++)
     {
         _samples[i] = false;
     }
-    _counter = 0;
+    _index = -1;
     _start = 0;
 }
 
 short Analyzer::count()
 {
-    return _counter;
+    return _index;
 }
 
 double Analyzer::standardDeviation(unsigned short *samples, unsigned short size)

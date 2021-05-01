@@ -4,9 +4,9 @@
 #include <math.h>
 #include "TimeProvider.h"
 
-#define SAMPLE_BUFFER_COUNT 200
+#define SAMPLE_BUFFER_COUNT 2000
 #define DEFAULT_DURATION_THRESHOLD 20000
-#define SLICE_DURATION DEFAULT_DURATION_THRESHOLD / SAMPLE_BUFFER_COUNT
+#define SLICE_DURATION 10 //DEFAULT_DURATION_THRESHOLD / SAMPLE_BUFFER_COUNT
 #define MAX_SAMPLE_COUNT 70
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
@@ -84,7 +84,7 @@ private:
 
     bool _samples[SAMPLE_BUFFER_COUNT];
     unsigned long _start = 0;
-    unsigned int _counter = 0;
+    short _index = -1;
     unsigned short _minSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
     unsigned short _maxSampleThreshold = DEFAULT_MAX_SAMPLE_THRESHOLD;
     unsigned short _durationThreshold = DEFAULT_DURATION_THRESHOLD;
