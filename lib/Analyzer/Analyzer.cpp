@@ -47,10 +47,16 @@ void Analyzer::recordSound(unsigned long time)
     _samples[_index] = true;
 }
 
-short Analyzer::indexFor(unsigned long time)
+unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
+{
+    unsigned short indexForDisplay = (unsigned short)(sliceIndex / SLICE_DURATION);
+    return indexForDisplay;
+}
+
+unsigned short Analyzer::indexFor(unsigned long time)
 {
     unsigned long timeSinceStart = time - _start;
-    short index = (short)(timeSinceStart / SLICE_DURATION);
+    unsigned short index = (unsigned short)(timeSinceStart / SLICE_DURATION);
     return index;
 }
 
@@ -93,6 +99,65 @@ void Analyzer::preProcess()
 
 void Analyzer::analyze(Summary *summary)
 {
+    initialize(summary);
+    preProcess();
+
+    bool withinSound = false;
+    bool withinSilence = false;
+    for (short i = 0; i <= _index; i++)
+    {
+        if (_samples[i])
+        {
+            if (!withinSound)
+            {
+                withinSound = true;
+                withinSilence = false;
+                summary->SoundDurations[summary->SoundCount] = 0;
+                summary->SoundCount++;
+            }
+            summary->TotalSoundDuration += SLICE_DURATION;
+            summary->SoundDurations[summary->SoundCount - 1] += SLICE_DURATION;
+            unsigned short index = indexForDisplay(i);
+            summary->Display[index] = '|';
+        }
+        else
+        {
+            if (!withinSilence)
+            {
+                withinSound = false;
+                withinSilence = true;
+                summary->SilenceDurations[summary->SilenceCount] = 0;
+                summary->SilenceCount++;
+            }
+            summary->TotalSilenceDuration += SLICE_DURATION;
+            summary->SilenceDurations[summary->SilenceCount - 1] += SLICE_DURATION;
+        }
+    }
+
+    if (_index != -1 && _index < SAMPLE_BUFFER_COUNT - 1)
+    {
+        unsigned short remainingSilenceDuration = _timeProvider->now() - _start - ((_index + 1) * SLICE_DURATION);
+        if (remainingSilenceDuration > 0 && !withinSilence)
+        {
+            summary->SilenceDurations[summary->SilenceCount] = 0;
+            summary->SilenceCount++;
+        }
+        summary->SilenceDurations[summary->SilenceCount - 1] = remainingSilenceDuration;
+        summary->TotalSilenceDuration += remainingSilenceDuration;
+    }
+
+    summary->AverageSoundDuration = averageSoundDuration(summary);
+    summary->AverageSilenceDuration = averageSilenceDuration(summary);
+
+    summary->SoundStandardDeviation = standardDeviation(summary->SoundDurations, summary->SoundCount);
+    summary->SilenceStandardDeviation = standardDeviation(summary->SilenceDurations, summary->SilenceCount);
+
+    summary->Result = determineResult(summary);
+    summary->RhythmDetected = rhythmDetected(summary->Result);
+}
+
+void Analyzer::initialize(Summary *summary)
+{
     summary->SoundCount = 0;
     summary->SilenceCount = 0;
     summary->AverageSoundDuration = 0;
@@ -104,55 +169,15 @@ void Analyzer::analyze(Summary *summary)
     summary->SilenceStandardDeviation = 0;
     summary->Result = UNKNOWN;
 
-    preProcess();
-
-    bool withinSound = false;
-    bool withinSilence = false;
-    unsigned short soundDurations[70];
-    unsigned short silenceDurations[70];
-    for (short i = 0; i <= _index; i++)
+    for (int i = 0; i < DISPLAY_LENGTH; i++)
     {
-        if (_samples[i])
-        {
-            if (!withinSound)
-            {
-                withinSound = true;
-                withinSilence = false;
-                summary->SoundCount++;
-            }
-            summary->TotalSoundDuration += SLICE_DURATION;
-        }
-        else
-        {
-            if (!withinSilence)
-            {
-                withinSound = false;
-                withinSilence = true;
-                summary->SilenceCount++;
-            }
-            summary->TotalSilenceDuration += SLICE_DURATION;
-        }
+        summary->Display[i] = '_';
     }
-
-    if (_index != -1 && _index < SAMPLE_BUFFER_COUNT - 1)
+    for (short i = 0; i < MAX_SAMPLE_COUNT; i++)
     {
-        unsigned short remainingSilenceDuration = _timeProvider->now() - _start - (_index * SLICE_DURATION);
-        summary->TotalSilenceDuration += remainingSilenceDuration;
-        silenceDurations[summary->SilenceCount] = remainingSilenceDuration;
-        if (remainingSilenceDuration > 0 && !withinSilence)
-        {
-            summary->SilenceCount++;
-        }
+        summary->SoundDurations[i] = 0;
+        summary->SilenceDurations[i] = 0;
     }
-
-    summary->AverageSoundDuration = averageSoundDuration(summary);
-    summary->AverageSilenceDuration = averageSilenceDuration(summary);
-
-    summary->SoundStandardDeviation = standardDeviation(soundDurations, summary->SoundCount);
-    summary->SilenceStandardDeviation = standardDeviation(silenceDurations, summary->SilenceCount);
-
-    summary->Result = determineResult(summary);
-    summary->RhythmDetected = rhythmDetected(summary->Result);
 }
 
 unsigned long Analyzer::averageSoundDuration(Summary *summary)

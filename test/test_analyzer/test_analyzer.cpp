@@ -61,15 +61,15 @@ void test_rhythmic_sound_detected_insufficient_samples(void)
 void test_rhythmic_sound_detected_frequency_low(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(500);
-    analyzer.recordSound(550);
+    analyzer.recordSound(549);
     analyzer.recordSound(900);
-    analyzer.recordSound(950);
+    analyzer.recordSound(949);
     analyzer.recordSound(1300);
-    analyzer.recordSound(1350);
+    analyzer.recordSound(1349);
     analyzer.recordSound(1700);
-    analyzer.recordSound(1750);
+    analyzer.recordSound(1749);
     timeProvider.set(1750);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(RHYTHM_DETECTED, summary.Result);
@@ -80,15 +80,15 @@ void test_rhythmic_sound_detected_silence_too_low(void)
 {
     analyzer.setSilenceDurationThreshold(500, 700);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(500);
-    analyzer.recordSound(550);
+    analyzer.recordSound(549);
     analyzer.recordSound(900);
-    analyzer.recordSound(950);
+    analyzer.recordSound(949);
     analyzer.recordSound(1300);
-    analyzer.recordSound(1350);
+    analyzer.recordSound(1349);
     analyzer.recordSound(1700);
-    analyzer.recordSound(1750);
+    analyzer.recordSound(1749);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(INSUFFICIENT_SILENCE_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
@@ -117,7 +117,7 @@ void test_count_rhythmic_sound_detected_ignored(void)
 void test_duration_rhythmic_sound_detected_ignored(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(50, summary.TotalSoundDuration);
 }
@@ -125,7 +125,7 @@ void test_duration_rhythmic_sound_detected_ignored(void)
 void test_silence_duration_at_end(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     timeProvider.set(300);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(150, summary.TotalSilenceDuration);
@@ -134,7 +134,7 @@ void test_silence_duration_at_end(void)
 void test_average_silence_duration_at_end(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     timeProvider.set(300);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(150, summary.AverageSilenceDuration);
@@ -143,7 +143,7 @@ void test_average_silence_duration_at_end(void)
 void test_total_silence_duration_ignore_first(void)
 {
     analyzer.recordSound(5000);
-    analyzer.recordSound(5150);
+    analyzer.recordSound(5149);
     timeProvider.set(5150);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
@@ -154,7 +154,7 @@ void test_duration_rhythmic_sound_detected_contiguous(void)
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(250);
-    analyzer.recordSound(350);
+    analyzer.recordSound(349);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(250, summary.TotalSoundDuration);
 }
@@ -172,9 +172,9 @@ void test_count_rhythmic_sound_detected_separated(void)
 void test_duration_rhythmic_sound_detected_separated(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(150, summary.TotalSoundDuration);
 }
@@ -240,8 +240,8 @@ void test_only_last_sound_is_stored_single(void)
 void test_only_last_sound_is_stored_double(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(200);
-    TEST_ASSERT_EQUAL(2, analyzer.count());
+    analyzer.recordSound(199);
+    TEST_ASSERT_EQUAL(10, analyzer.count());
 }
 
 void test_only_last_sound_is_stored(void)
@@ -249,8 +249,8 @@ void test_only_last_sound_is_stored(void)
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(250);
-    analyzer.recordSound(350);
-    TEST_ASSERT_EQUAL(2, analyzer.count());
+    analyzer.recordSound(349);
+    TEST_ASSERT_EQUAL(25, analyzer.count());
 }
 
 void test_only_last_sound_is_stored_separated(void)
@@ -258,8 +258,8 @@ void test_only_last_sound_is_stored_separated(void)
     analyzer.recordSound(100);
     analyzer.recordSound(150);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
-    TEST_ASSERT_EQUAL(4, analyzer.count());
+    analyzer.recordSound(649);
+    TEST_ASSERT_EQUAL(55, analyzer.count());
 }
 
 void test_average_duration_threshold_not_met(void)
@@ -267,9 +267,9 @@ void test_average_duration_threshold_not_met(void)
     analyzer.setSampleThreshold(1, 100);
     analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(600);
+    analyzer.recordSound(599);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(INSUFFICIENT_SOUND_DURATION, summary.Result);
     TEST_ASSERT_FALSE(summary.RhythmDetected);
@@ -279,9 +279,9 @@ void test_average_sound_duration(void)
 {
     analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(75, summary.AverageSoundDuration);
 }
@@ -290,9 +290,9 @@ void test_average_silence_duration_single(void)
 {
     analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     timeProvider.set(650);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(400, summary.AverageSilenceDuration);
@@ -302,11 +302,11 @@ void test_average_silence_duration_multiple(void)
 {
     analyzer.setSoundDurationThreshold(60, 500);
     analyzer.recordSound(100);
-    analyzer.recordSound(150);
+    analyzer.recordSound(149);
     analyzer.recordSound(550);
-    analyzer.recordSound(650);
+    analyzer.recordSound(649);
     analyzer.recordSound(1150);
-    analyzer.recordSound(1250);
+    analyzer.recordSound(1249);
     timeProvider.set(1250);
     analyzer.analyze(&summary);
     TEST_ASSERT_EQUAL(450, summary.AverageSilenceDuration);
@@ -363,7 +363,7 @@ void test_display_shows_instant_sound(void)
 void test_display_shows_single_sound(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(200);
+    analyzer.recordSound(199);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -377,7 +377,7 @@ void test_display_shows_single_long_sound(void)
 {
     analyzer.recordSound(100);
     analyzer.recordSound(200);
-    analyzer.recordSound(301);
+    analyzer.recordSound(299);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -391,7 +391,7 @@ void test_display_shows_single_long_sound(void)
 void test_display_shows_single_long_sound_beyond_slice_duration(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(301);
+    analyzer.recordSound(201);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);
@@ -405,9 +405,9 @@ void test_display_shows_single_long_sound_beyond_slice_duration(void)
 void test_display_shows_multiple_long_sound_beyond_slice_duration(void)
 {
     analyzer.recordSound(100);
-    analyzer.recordSound(301);
-    analyzer.recordSound(700);
-    analyzer.recordSound(1000);
+    analyzer.recordSound(200);
+    analyzer.recordSound(401);
+    analyzer.recordSound(601);
     analyzer.analyze(&summary);
 
     TEST_ASSERT_EQUAL('|', summary.Display[0]);

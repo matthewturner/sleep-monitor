@@ -44,6 +44,8 @@ struct summary
     bool RhythmDetected;
     char Display[DISPLAY_LENGTH];
     unsigned short SliceDuration;
+    unsigned short SoundDurations[MAX_SAMPLE_COUNT];
+    unsigned short SilenceDurations[MAX_SAMPLE_COUNT];
 };
 
 typedef struct summary Summary;
@@ -75,6 +77,7 @@ public:
 private:
     TimeProvider *_timeProvider;
     bool rhythmDetected(unsigned short status);
+    void initialize(Summary *summary);
     void preProcess();
     unsigned short determineResult(Summary *summary);
     unsigned long averageSoundDuration(Summary *summary);
@@ -83,7 +86,8 @@ private:
     double standardDeviation(unsigned short *samples, unsigned short size);
     double variance(unsigned short *samples, unsigned short size);
 
-    short indexFor(unsigned long time);
+    unsigned short indexFor(unsigned long time);
+    unsigned short indexForDisplay(unsigned short sliceIndex);
 
     bool _samples[SAMPLE_BUFFER_COUNT];
     unsigned long _start = 0;
