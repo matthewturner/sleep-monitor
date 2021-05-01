@@ -19,14 +19,14 @@ void test_summary_cleared(void)
 {
     summary.AverageSoundDuration = 99;
     summary.AverageSilenceDuration = 99;
-    summary.Count = 99;
+    summary.SoundCount = 99;
     summary.TotalSoundDuration = 99;
     summary.TotalSilenceDuration = 99;
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(0, summary.Count);
-    TEST_ASSERT_EQUAL(0, summary.AverageSilenceDuration);
+    TEST_ASSERT_EQUAL(0, summary.SoundCount);
+    TEST_ASSERT_EQUAL(DEFAULT_DURATION_THRESHOLD, summary.AverageSilenceDuration);
     TEST_ASSERT_EQUAL(0, summary.AverageSoundDuration);
-    TEST_ASSERT_EQUAL(0, summary.TotalSilenceDuration);
+    TEST_ASSERT_EQUAL(DEFAULT_DURATION_THRESHOLD, summary.TotalSilenceDuration);
     TEST_ASSERT_EQUAL(0, summary.TotalSoundDuration);
 }
 
@@ -102,7 +102,7 @@ void test_count_rhythmic_sound_detected_frequency_low(void)
     analyzer.recordSound(1300);
     analyzer.recordSound(1700);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(5, summary.Count);
+    TEST_ASSERT_EQUAL(5, summary.SoundCount);
 }
 
 void test_count_rhythmic_sound_detected_ignored(void)
@@ -111,7 +111,7 @@ void test_count_rhythmic_sound_detected_ignored(void)
     analyzer.recordSound(150);
     analyzer.recordSound(500);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(2, summary.Count);
+    TEST_ASSERT_EQUAL(2, summary.SoundCount);
 }
 
 void test_duration_rhythmic_sound_detected_ignored(void)
@@ -166,7 +166,7 @@ void test_count_rhythmic_sound_detected_separated(void)
     analyzer.recordSound(550);
     analyzer.recordSound(650);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(2, summary.Count);
+    TEST_ASSERT_EQUAL(2, summary.SoundCount);
 }
 
 void test_duration_rhythmic_sound_detected_separated(void)
@@ -220,7 +220,7 @@ void test_record_silence(void)
     timeProvider.set(5000);
     analyzer.record(false);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(0, summary.Count);
+    TEST_ASSERT_EQUAL(0, summary.SoundCount);
 }
 
 void test_record_sound(void)
@@ -228,7 +228,7 @@ void test_record_sound(void)
     timeProvider.set(5000);
     analyzer.record(true);
     analyzer.analyze(&summary);
-    TEST_ASSERT_EQUAL(1, summary.Count);
+    TEST_ASSERT_EQUAL(1, summary.SoundCount);
 }
 
 void test_only_last_sound_is_stored_single(void)

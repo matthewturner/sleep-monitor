@@ -71,93 +71,105 @@ bool Analyzer::analysisRequired()
     return false;
 }
 
+void Analyzer::preProcess()
+{
+    short indexOfLastSound = -1;
+    for (short i = 0; i < _index; i++)
+    {
+        if (_samples[i])
+        {
+            if ((indexOfLastSound != -1) && (i - indexOfLastSound) < (CONTIGUOUS_SOUND_THRESHOLD / SLICE_DURATION))
+            {
+                // fill in the gap
+                for (short j = indexOfLastSound; j <= i; j++)
+                {
+                    _samples[j] = true;
+                }
+            }
+            indexOfLastSound = i;
+        }
+    }
+}
+
 void Analyzer::analyze(Summary *summary)
 {
-    summary->Count = 0;
+    summary->SoundCount = 0;
+    summary->SilenceCount = 0;
     summary->AverageSoundDuration = 0;
     summary->AverageSilenceDuration = 0;
     summary->TotalSoundDuration = 0;
     summary->TotalSilenceDuration = 0;
     summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
 
-    unsigned short currentSound = 0;
-    unsigned short previousSound = 0;
-    unsigned short soundCount = 0;
-    unsigned short silenceCount = 0;
+    preProcess();
+
+    bool withinSound = false;
+    bool withinSilence = false;
     unsigned short soundDurations[70];
     unsigned short silenceDurations[70];
     for (short i = 0; i < _index; i++)
     {
-        currentSound = (i + 1) * SLICE_DURATION;
-        unsigned long duration = currentSound - previousSound;
-
-        if (previousSound == 0 || duration >= CONTIGUOUS_SOUND_THRESHOLD)
+        if (_samples[i])
         {
-            summary->Count++;
-        }
-
-        if (previousSound != 0 && duration < CONTIGUOUS_SOUND_THRESHOLD)
-        {
-            if (soundCount < MAX_SAMPLE_COUNT)
+            if (!withinSound)
             {
-                summary->TotalSoundDuration += duration;
-                soundDurations[soundCount] = duration;
-                soundCount++;
+                withinSound = true;
+                withinSilence = false;
+                summary->SoundCount++;
             }
+            summary->TotalSoundDuration += SLICE_DURATION;
         }
-
-        if (previousSound != 0 && duration >= CONTIGUOUS_SOUND_THRESHOLD)
+        else
         {
-            if (silenceCount < MAX_SAMPLE_COUNT)
+            if (!withinSilence)
             {
-                summary->TotalSilenceDuration += duration;
-                silenceDurations[silenceCount] = duration;
-                silenceCount++;
+                withinSound = false;
+                withinSilence = true;
+                summary->SilenceCount++;
             }
+            summary->TotalSilenceDuration += SLICE_DURATION;
         }
-
-        previousSound = currentSound;
     }
 
-    unsigned long remainingSilenceDuration = _timeProvider->now() - previousSound;
-    if (remainingSilenceDuration > 0)
+    if (_index < SAMPLE_BUFFER_COUNT - 1)
     {
+        unsigned long remainingSilenceDuration = (SAMPLE_BUFFER_COUNT - _index - 1) * SLICE_DURATION;
         summary->TotalSilenceDuration += remainingSilenceDuration;
-        silenceDurations[silenceCount] = remainingSilenceDuration;
-        silenceCount++;
+        silenceDurations[summary->SilenceCount] = remainingSilenceDuration;
+        summary->SilenceCount++;
     }
 
-    summary->AverageSoundDuration = averageSoundDuration(summary, soundCount);
-    summary->AverageSilenceDuration = averageSilenceDuration(summary, silenceCount);
+    summary->AverageSoundDuration = averageSoundDuration(summary);
+    summary->AverageSilenceDuration = averageSilenceDuration(summary);
 
-    summary->SoundStandardDeviation = standardDeviation(soundDurations, soundCount);
-    summary->SilenceStandardDeviation = standardDeviation(silenceDurations, silenceCount);
+    summary->SoundStandardDeviation = standardDeviation(soundDurations, summary->SoundCount);
+    summary->SilenceStandardDeviation = standardDeviation(silenceDurations, summary->SilenceCount);
 
     summary->Result = determineResult(summary);
     summary->RhythmDetected = rhythmDetected(summary->Result);
 }
 
-unsigned long Analyzer::averageSoundDuration(Summary *summary, unsigned short soundCount)
+unsigned long Analyzer::averageSoundDuration(Summary *summary)
 {
-    if (soundCount == 0)
+    if (summary->SoundCount == 0)
     {
         return 0;
     }
-    return (unsigned long)(summary->TotalSoundDuration / soundCount);
+    return (unsigned long)(summary->TotalSoundDuration / summary->SoundCount);
 }
 
-unsigned long Analyzer::averageSilenceDuration(Summary *summary, unsigned short silenceCount)
+unsigned long Analyzer::averageSilenceDuration(Summary *summary)
 {
-    if (silenceCount == 0)
+    if (summary->SilenceCount == 0)
     {
         return 0;
     }
-    return (unsigned long)(summary->TotalSilenceDuration / silenceCount);
+    return (unsigned long)(summary->TotalSilenceDuration / summary->SilenceCount);
 }
 
 unsigned short Analyzer::determineResult(Summary *summary)
 {
-    if (summary->Count < _minSampleThreshold)
+    if (summary->SoundCount < _minSampleThreshold)
     {
         return INSUFFICIENT_SAMPLE_COUNT;
     }
@@ -215,7 +227,7 @@ void Analyzer::clear()
 
 short Analyzer::count()
 {
-    return _index;
+    return _index + 1;
 }
 
 double Analyzer::standardDeviation(unsigned short *samples, unsigned short size)

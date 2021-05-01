@@ -31,7 +31,8 @@
 
 struct summary
 {
-    unsigned short Count;
+    unsigned short SoundCount;
+    unsigned short SilenceCount;
     unsigned long TotalSoundDuration;
     unsigned long TotalSilenceDuration;
     unsigned long AverageSoundDuration;
@@ -73,9 +74,10 @@ public:
 private:
     TimeProvider *_timeProvider;
     bool rhythmDetected(unsigned short status);
+    void preProcess();
     unsigned short determineResult(Summary *summary);
-    unsigned long averageSoundDuration(Summary *summary, unsigned short soundCount);
-    unsigned long averageSilenceDuration(Summary *summary, unsigned short silenceCount);
+    unsigned long averageSoundDuration(Summary *summary);
+    unsigned long averageSilenceDuration(Summary *summary);
 
     double standardDeviation(unsigned short *samples, unsigned short size);
     double variance(unsigned short *samples, unsigned short size);
