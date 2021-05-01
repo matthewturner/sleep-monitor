@@ -7,6 +7,7 @@
 #define SAMPLE_BUFFER_COUNT 2000
 #define DEFAULT_DURATION_THRESHOLD 20000
 #define SLICE_DURATION 10
+#define SLICE_TO_DISPLAY 20
 #define MAX_SAMPLE_COUNT 70
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
@@ -79,6 +80,8 @@ private:
     bool rhythmDetected(unsigned short status);
     void initialize(Summary *summary);
     void preProcess();
+    unsigned short elapsedDuration();
+    unsigned short accountedDuration();
     unsigned short determineResult(Summary *summary);
     unsigned long averageSoundDuration(Summary *summary);
     unsigned long averageSilenceDuration(Summary *summary);

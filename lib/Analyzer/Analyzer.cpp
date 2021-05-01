@@ -5,98 +5,6 @@ Analyzer::Analyzer(TimeProvider *timeProvider)
     _timeProvider = timeProvider;
 }
 
-void Analyzer::setDurationThreshold(unsigned short threshold)
-{
-    _durationThreshold = threshold;
-}
-
-void Analyzer::setSampleThreshold(unsigned short min, unsigned short max)
-{
-    _minSampleThreshold = min;
-    _maxSampleThreshold = max;
-}
-
-void Analyzer::setSilenceDurationThreshold(unsigned short min, unsigned short max)
-{
-    _minSilenceDurationThreshold = min;
-    _maxSilenceDurationThreshold = max;
-}
-
-void Analyzer::setSoundDurationThreshold(unsigned short min, unsigned short max)
-{
-    _minSoundDurationThreshold = min;
-    _maxSoundDurationThreshold = max;
-}
-
-void Analyzer::record(bool sound)
-{
-    if (sound)
-    {
-        recordSound(_timeProvider->now());
-    }
-}
-
-void Analyzer::recordSound(unsigned long time)
-{
-    if (_index == -1)
-    {
-        _start = time;
-    }
-
-    _index = indexFor(time);
-    _samples[_index] = true;
-}
-
-unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
-{
-    unsigned short indexForDisplay = (unsigned short)(sliceIndex / 20);
-    return indexForDisplay;
-}
-
-unsigned short Analyzer::indexFor(unsigned long time)
-{
-    unsigned long timeSinceStart = time - _start;
-    unsigned short index = (unsigned short)(timeSinceStart / SLICE_DURATION);
-    return index;
-}
-
-bool Analyzer::analysisRequired()
-{
-    if (_index == -1)
-    {
-        return false;
-    }
-    if (_index >= SAMPLE_BUFFER_COUNT)
-    {
-        return true;
-    }
-    if ((_timeProvider->now() - _start) > _durationThreshold)
-    {
-        return true;
-    }
-    return false;
-}
-
-void Analyzer::preProcess()
-{
-    short indexOfLastSound = -1;
-    for (short i = 0; i <= _index; i++)
-    {
-        if (_samples[i])
-        {
-            if ((indexOfLastSound != -1) && (i - indexOfLastSound) < (CONTIGUOUS_SOUND_THRESHOLD / SLICE_DURATION))
-            {
-                // fill in the gap
-                for (short j = indexOfLastSound; j <= i; j++)
-                {
-                    _samples[j] = true;
-                }
-            }
-            indexOfLastSound = i;
-        }
-    }
-}
-
 void Analyzer::analyze(Summary *summary)
 {
     initialize(summary);
@@ -136,7 +44,7 @@ void Analyzer::analyze(Summary *summary)
 
     if (_index != -1 && _index < SAMPLE_BUFFER_COUNT - 1)
     {
-        unsigned short remainingSilenceDuration = _timeProvider->now() - _start - ((_index + 1) * SLICE_DURATION);
+        unsigned short remainingSilenceDuration = elapsedDuration() - accountedDuration();
         if (remainingSilenceDuration > 0 && !withinSilence)
         {
             summary->SilenceDurations[summary->SilenceCount] = 0;
@@ -154,6 +62,43 @@ void Analyzer::analyze(Summary *summary)
 
     summary->Result = determineResult(summary);
     summary->RhythmDetected = rhythmDetected(summary->Result);
+}
+
+bool Analyzer::analysisRequired()
+{
+    if (_index == -1)
+    {
+        return false;
+    }
+    if (_index >= SAMPLE_BUFFER_COUNT)
+    {
+        return true;
+    }
+    if (elapsedDuration() > _durationThreshold)
+    {
+        return true;
+    }
+    return false;
+}
+
+void Analyzer::preProcess()
+{
+    short indexOfLastSound = -1;
+    for (short i = 0; i <= _index; i++)
+    {
+        if (_samples[i])
+        {
+            if ((indexOfLastSound != -1) && (i - indexOfLastSound) < (CONTIGUOUS_SOUND_THRESHOLD / SLICE_DURATION))
+            {
+                // fill in the gap
+                for (short j = indexOfLastSound + 1; j <= i; j++)
+                {
+                    _samples[j] = true;
+                }
+            }
+            indexOfLastSound = i;
+        }
+    }
 }
 
 void Analyzer::initialize(Summary *summary)
@@ -178,6 +123,48 @@ void Analyzer::initialize(Summary *summary)
         summary->SoundDurations[i] = 0;
         summary->SilenceDurations[i] = 0;
     }
+}
+
+void Analyzer::record(bool sound)
+{
+    if (sound)
+    {
+        recordSound(_timeProvider->now());
+    }
+}
+
+void Analyzer::recordSound(unsigned long time)
+{
+    if (_index == -1)
+    {
+        _start = time;
+    }
+
+    _index = indexFor(time);
+    _samples[_index] = true;
+}
+
+unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
+{
+    unsigned short indexForDisplay = (unsigned short)(sliceIndex / SLICE_TO_DISPLAY);
+    return indexForDisplay;
+}
+
+unsigned short Analyzer::indexFor(unsigned long time)
+{
+    unsigned long timeSinceStart = time - _start;
+    unsigned short index = (unsigned short)(timeSinceStart / SLICE_DURATION);
+    return index;
+}
+
+unsigned short Analyzer::elapsedDuration()
+{
+    return _timeProvider->now() - _start;
+}
+
+unsigned short Analyzer::accountedDuration()
+{
+    return count() * SLICE_DURATION;
 }
 
 unsigned long Analyzer::averageSoundDuration(Summary *summary)
@@ -286,4 +273,27 @@ double Analyzer::variance(unsigned short *samples, unsigned short size)
     }
 
     return variance / (size - 1);
+}
+
+void Analyzer::setDurationThreshold(unsigned short threshold)
+{
+    _durationThreshold = threshold;
+}
+
+void Analyzer::setSampleThreshold(unsigned short min, unsigned short max)
+{
+    _minSampleThreshold = min;
+    _maxSampleThreshold = max;
+}
+
+void Analyzer::setSilenceDurationThreshold(unsigned short min, unsigned short max)
+{
+    _minSilenceDurationThreshold = min;
+    _maxSilenceDurationThreshold = max;
+}
+
+void Analyzer::setSoundDurationThreshold(unsigned short min, unsigned short max)
+{
+    _minSoundDurationThreshold = min;
+    _maxSoundDurationThreshold = max;
 }
