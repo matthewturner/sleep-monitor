@@ -4,12 +4,14 @@
 #include <math.h>
 #include "TimeProvider.h"
 
-#define SAMPLE_BUFFER_COUNT 200
+#define SAMPLE_BUFFER_COUNT 2000
+#define DEFAULT_DURATION_THRESHOLD 20000
+#define SLICE_DURATION 10
+#define SLICE_TO_DISPLAY 20
 #define MAX_SAMPLE_COUNT 70
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
 #define DEFAULT_MAX_SAMPLE_THRESHOLD 40
-#define DEFAULT_DURATION_THRESHOLD 20000
 #define DEFAULT_MIN_SOUND_DURATION_THRESHOLD 50
 #define DEFAULT_MAX_SOUND_DURATION_THRESHOLD 600
 #define DEFAULT_MIN_SILENCE_DURATION_THRESHOLD 2000
@@ -27,10 +29,12 @@
 #define EXCESSIVE_SILENCE_DURATION 5
 #define EXCESSIVE_SOUND_DEVIATION 6
 #define EXCESSIVE_SILENCE_DEVIATION 7
+#define UNKNOWN 99
 
 struct summary
 {
-    unsigned short Count;
+    unsigned short SoundCount;
+    unsigned short SilenceCount;
     unsigned long TotalSoundDuration;
     unsigned long TotalSilenceDuration;
     unsigned long AverageSoundDuration;
@@ -41,6 +45,8 @@ struct summary
     bool RhythmDetected;
     char Display[DISPLAY_LENGTH];
     unsigned short SliceDuration;
+    unsigned short SoundDurations[MAX_SAMPLE_COUNT];
+    unsigned short SilenceDurations[MAX_SAMPLE_COUNT];
 };
 
 typedef struct summary Summary;
@@ -72,15 +78,23 @@ public:
 private:
     TimeProvider *_timeProvider;
     bool rhythmDetected(unsigned short status);
+    void initialize(Summary *summary);
+    void preProcess();
+    unsigned short elapsedDuration();
+    unsigned short accountedDuration();
     unsigned short determineResult(Summary *summary);
-    unsigned long averageSoundDuration(Summary *summary, unsigned short soundCount);
-    unsigned long averageSilenceDuration(Summary *summary, unsigned short silenceCount);
+    unsigned long averageSoundDuration(Summary *summary);
+    unsigned long averageSilenceDuration(Summary *summary);
 
-    double standardDeviation(unsigned long *samples, unsigned short size);
-    double variance(unsigned long *samples, unsigned short size);
+    double standardDeviation(unsigned short *samples, unsigned short size);
+    double variance(unsigned short *samples, unsigned short size);
 
-    unsigned long _samples[SAMPLE_BUFFER_COUNT];
-    unsigned int _counter = 0;
+    unsigned short indexFor(unsigned long time);
+    unsigned short indexForDisplay(unsigned short sliceIndex);
+
+    bool _samples[SAMPLE_BUFFER_COUNT];
+    unsigned long _start = 0;
+    short _index = -1;
     unsigned short _minSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
     unsigned short _maxSampleThreshold = DEFAULT_MAX_SAMPLE_THRESHOLD;
     unsigned short _durationThreshold = DEFAULT_DURATION_THRESHOLD;
