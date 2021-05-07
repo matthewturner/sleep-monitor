@@ -17,6 +17,7 @@ Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter, &_valve);
 RuntimeManager _summaryRuntimeManager(&_timeProvider, 0, 2000);
 Reporter _reporter(&_summaryRuntimeManager);
 RuntimeManager _autoInflater(&_timeProvider, 0, INITIAL_AUTO_INFLATE_WAIT_TIME);
+CommandModule _commandModule(&Serial);
 
 void setup()
 {
@@ -54,6 +55,20 @@ void loop()
     _pillow.reverse();
     _analyzer.clear();
     _autoInflater.waitFromNow();
+  }
+
+  unsigned char command = _commandModule.tryReadCommand();
+  switch (command)
+  {
+  case STOP:
+    _pillow.stop();
+    break;
+  case INFLATE:
+    _pillow.tryInflate();
+    break;
+  case DEFLATE:
+    _pillow.tryDeflate();
+    break;
   }
 
   if (_autoInflater.run())

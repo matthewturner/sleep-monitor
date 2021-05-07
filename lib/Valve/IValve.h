@@ -1,7 +1,7 @@
 #ifndef IValve_h
 #define IValve_h
 
-#define UNKNOWN 0
+#define UNDETERMINED 0
 #define CLOSED 1
 #define OPEN 2
 
