@@ -14,7 +14,7 @@ void Analyzer::analyze(Summary *summary)
     bool withinSilence = false;
     for (short i = 0; i <= _index; i++)
     {
-        if (_samples[i])
+        if (sample(i))
         {
             if (!withinSound)
             {
@@ -86,14 +86,14 @@ void Analyzer::preProcess()
     short indexOfLastSound = -1;
     for (short i = 0; i <= _index; i++)
     {
-        if (_samples[i])
+        if (sample(i))
         {
             if ((indexOfLastSound != -1) && (i - indexOfLastSound) < (CONTIGUOUS_SOUND_THRESHOLD / SLICE_DURATION))
             {
                 // fill in the gap
                 for (short j = indexOfLastSound + 1; j <= i; j++)
                 {
-                    _samples[j] = true;
+                    sample(j, true);
                 }
             }
             indexOfLastSound = i;
@@ -141,7 +141,35 @@ void Analyzer::recordSound(unsigned long time)
     }
 
     _index = indexFor(time);
-    _samples[_index] = true;
+    sample(_index, true);
+}
+
+unsigned char Analyzer::index(unsigned short index)
+{
+    return index / SAMPLE_BUFFER_COUNT;
+}
+
+unsigned char Analyzer::subIndex(unsigned short index)
+{
+    return index % SAMPLE_BUFFER_COUNT;
+}
+
+bool Analyzer::sample(unsigned short i)
+{
+    bool bit = (_samples[index(i)] >> subIndex(i)) & 1U;
+    return bit;
+}
+
+void Analyzer::sample(unsigned short i, bool value)
+{
+    if (value)
+    {
+        _samples[index(i)] |= 1UL << subIndex(i);
+    }
+    else
+    {
+        _samples[index(i)] &= ~(1UL << subIndex(i));
+    }
 }
 
 unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
@@ -167,7 +195,7 @@ unsigned short Analyzer::accountedDuration()
     return count() * SLICE_DURATION;
 }
 
-unsigned long Analyzer::averageSoundDuration(Summary *summary)
+unsigned int Analyzer::averageSoundDuration(Summary *summary)
 {
     if (summary->SoundCount == 0)
     {
@@ -176,7 +204,7 @@ unsigned long Analyzer::averageSoundDuration(Summary *summary)
     return (unsigned long)(summary->TotalSoundDuration / summary->SoundCount);
 }
 
-unsigned long Analyzer::averageSilenceDuration(Summary *summary)
+unsigned int Analyzer::averageSilenceDuration(Summary *summary)
 {
     if (summary->SilenceCount == 0)
     {
@@ -235,9 +263,9 @@ bool Analyzer::rhythmDetected(unsigned short status)
 
 void Analyzer::clear()
 {
-    for (short i = 0; i < SAMPLE_BUFFER_COUNT; i++)
+    for (unsigned short i = 0; i < SAMPLE_BUFFER_COUNT; i++)
     {
-        _samples[i] = false;
+        _samples[index(i)] = 0;
     }
     _index = -1;
     _start = 0;

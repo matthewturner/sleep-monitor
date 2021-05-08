@@ -92,8 +92,8 @@ void loop()
   if (_analyzer.analysisRequired())
   {
     Serial.println("Analyzing...");
-    // _analyzer.analyze(&_summary);
-    // _reporter.reportOn(&_summary);
+    _analyzer.analyze(&_summary);
+    _reporter.reportOn(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)

@@ -560,6 +560,28 @@ void test_silence_standard_deviation_exceeded(void)
     TEST_ASSERT_EQUAL(EXCESSIVE_SILENCE_DEVIATION, summary.Result);
 }
 
+void test_initial_sample_unset(void)
+{
+    TEST_ASSERT_FALSE(analyzer.sample(0));
+}
+
+void test_initial_sample(void)
+{
+    analyzer.sample(0, true);
+    TEST_ASSERT_TRUE(analyzer.sample(0));
+}
+
+void test_second_sample_long_unset(void)
+{
+    TEST_ASSERT_FALSE(analyzer.sample(33));
+}
+
+void test_second_sample_long(void)
+{
+    analyzer.sample(33, true);
+    TEST_ASSERT_TRUE(analyzer.sample(33));
+}
+
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
@@ -610,6 +632,10 @@ int main(int argc, char **argv)
     RUN_TEST(test_basic_silence_standard_deviation);
     RUN_TEST(test_multiple_silence_standard_deviation);
     RUN_TEST(test_silence_standard_deviation_exceeded);
+    RUN_TEST(test_initial_sample_unset);
+    RUN_TEST(test_initial_sample);
+    RUN_TEST(test_second_sample_long_unset);
+    RUN_TEST(test_second_sample_long);
     UNITY_END();
 
     return 0;

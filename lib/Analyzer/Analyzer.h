@@ -4,11 +4,11 @@
 #include <math.h>
 #include "TimeProvider.h"
 
-#define SAMPLE_BUFFER_COUNT 1000
-#define DEFAULT_DURATION_THRESHOLD 10000
+#define SAMPLE_BUFFER_COUNT 65
+#define DEFAULT_DURATION_THRESHOLD 20000
 #define SLICE_DURATION 10
 #define SLICE_TO_DISPLAY 20
-#define MAX_SAMPLE_COUNT 70
+#define MAX_SAMPLE_COUNT 100
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
 #define DEFAULT_MAX_SAMPLE_THRESHOLD 40
@@ -35,13 +35,13 @@ struct summary
 {
     unsigned short SoundCount;
     unsigned short SilenceCount;
-    unsigned long TotalSoundDuration;
-    unsigned long TotalSilenceDuration;
-    unsigned long AverageSoundDuration;
-    unsigned long AverageSilenceDuration;
+    unsigned int TotalSoundDuration;
+    unsigned int TotalSilenceDuration;
+    unsigned int AverageSoundDuration;
+    unsigned int AverageSilenceDuration;
     double SoundStandardDeviation;
     double SilenceStandardDeviation;
-    unsigned short Result;
+    unsigned char Result;
     bool RhythmDetected;
     char Display[DISPLAY_LENGTH];
     unsigned short SliceDuration;
@@ -71,6 +71,9 @@ public:
     void setMaxSoundStandardDeviation(unsigned short max);
     void setMaxSilenceStandardDeviation(unsigned short max);
 
+    bool sample(unsigned short index);
+    void sample(unsigned short index, bool value);
+
     void clear();
 
     short count();
@@ -83,16 +86,18 @@ private:
     unsigned short elapsedDuration();
     unsigned short accountedDuration();
     unsigned short determineResult(Summary *summary);
-    unsigned long averageSoundDuration(Summary *summary);
-    unsigned long averageSilenceDuration(Summary *summary);
+    unsigned int averageSoundDuration(Summary *summary);
+    unsigned int averageSilenceDuration(Summary *summary);
 
     double standardDeviation(unsigned short *samples, unsigned short size);
     double variance(unsigned short *samples, unsigned short size);
 
     unsigned short indexFor(unsigned long time);
     unsigned short indexForDisplay(unsigned short sliceIndex);
+    unsigned char index(unsigned short index);
+    unsigned char subIndex(unsigned short index);
 
-    bool _samples[SAMPLE_BUFFER_COUNT];
+    unsigned long _samples[SAMPLE_BUFFER_COUNT];
     unsigned long _start = 0;
     short _index = -1;
     unsigned short _minSampleThreshold = DEFAULT_MIN_SAMPLE_THRESHOLD;
