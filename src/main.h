@@ -15,7 +15,8 @@
 #include "Pillow.h"
 #include "RuntimeManager.h"
 #include "Reporter.h"
-#include "CommandModule.h"
+#include "CommandReader.h"
+#include "HardwareStreamReader.h"
 
 #define INITIAL_AUTO_INFLATE_WAIT_TIME (unsigned long)30 * MINUTES
 #define SUBSEQUENT_AUTO_INFLATE_WAIT_TIME (unsigned long)10 * MINUTES

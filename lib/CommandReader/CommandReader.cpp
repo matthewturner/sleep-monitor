@@ -1,28 +1,23 @@
-#include "CommandModule.h"
+#include "CommandReader.h"
 
-CommandModule::CommandModule(HardwareSerial *stream)
+CommandReader::CommandReader(IStreamReader *streamReader)
 {
-    _stream = stream;
+    _streamReader = streamReader;
 }
 
-unsigned char CommandModule::tryReadInstruction()
+unsigned char CommandReader::tryReadCommand()
 {
-    int commandLength = tryReadCommand();
-    if (commandLength == 0)
-    {
-        return -1;
-    }
-    unsigned char instruction = convertToInstruction(commandLength);
+    unsigned char instructionLength = tryReadInstruction();
+    unsigned char instruction = convertToCommand(instructionLength);
     return instruction;
 }
 
-unsigned char CommandModule::tryReadCommand()
+unsigned char CommandReader::tryReadInstruction()
 {
     int index = -1;
-    while (_stream->available())
+    while (_streamReader->available())
     {
-        delay(2);
-        char ch = _stream->read();
+        char ch = _streamReader->read();
         switch (ch)
         {
         case '>':
@@ -40,8 +35,12 @@ unsigned char CommandModule::tryReadCommand()
     return 0;
 }
 
-unsigned char CommandModule::convertToInstruction(unsigned char commandLength)
+unsigned char CommandReader::convertToCommand(unsigned char instructionLength)
 {
+    if (instructionLength == 0)
+    {
+        return NONE;
+    }
     if (strcmp(_commandBuffer, "stop") == 0)
     {
         return STOP;
