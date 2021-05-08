@@ -63,16 +63,19 @@ void loop()
   switch (_commandModule.tryReadCommand())
   {
   case STOP:
+    Serial.println("Command: Stop");
     _pillow.stop();
     _analyzer.clear();
     _autoInflater.waitFromNow();
     break;
   case INFLATE:
+    Serial.println("Command: Inflate");
     _pillow.tryInflate();
     _analyzer.clear();
     _autoInflater.waitFromNow();
     break;
   case DEFLATE:
+    Serial.println("Command: Deflate");
     _pillow.tryDeflate();
     _analyzer.clear();
     _autoInflater.waitFromNow();
