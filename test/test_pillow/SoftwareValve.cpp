@@ -21,5 +21,5 @@ char SoftwareValve::state()
 
 void SoftwareValve::reset()
 {
-    _state = UNKNOWN;
+    _state = UNDETERMINED;
 }

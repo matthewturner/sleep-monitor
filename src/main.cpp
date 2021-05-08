@@ -17,10 +17,14 @@ Pillow _pillow(&_endStopTop, &_endStopBottom, &_stepperAdapter, &_valve);
 RuntimeManager _summaryRuntimeManager(&_timeProvider, 0, 2000);
 Reporter _reporter(&_summaryRuntimeManager);
 RuntimeManager _autoInflater(&_timeProvider, 0, INITIAL_AUTO_INFLATE_WAIT_TIME);
+HardwareStreamReader _streamReader(&Serial);
+CommandReader _commandModule(&_streamReader);
 
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("Setting up...");
+
   pinMode(13, OUTPUT);
 
   _valveServo.attach(VALVE_PIN);
@@ -56,6 +60,28 @@ void loop()
     _autoInflater.waitFromNow();
   }
 
+  switch (_commandModule.tryReadCommand())
+  {
+  case STOP:
+    Serial.println("Command: Stop");
+    _pillow.stop();
+    _analyzer.clear();
+    _autoInflater.waitFromNow();
+    break;
+  case INFLATE:
+    Serial.println("Command: Inflate");
+    _pillow.tryInflate();
+    _analyzer.clear();
+    _autoInflater.waitFromNow();
+    break;
+  case DEFLATE:
+    Serial.println("Command: Deflate");
+    _pillow.tryDeflate();
+    _analyzer.clear();
+    _autoInflater.waitFromNow();
+    break;
+  }
+
   if (_autoInflater.run())
   {
     Serial.println("Auto-inflating...");
@@ -66,8 +92,8 @@ void loop()
   if (_analyzer.analysisRequired())
   {
     Serial.println("Analyzing...");
-    _analyzer.analyze(&_summary);
-    _reporter.reportOn(&_summary);
+    // _analyzer.analyze(&_summary);
+    // _reporter.reportOn(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)

@@ -8,10 +8,12 @@ Reporter::Reporter(RuntimeManager *runtimeManager)
 void Reporter::reportOn(Summary *summary)
 {
     Serial.println("Summary");
-    Serial.print("\tSample Count: ");
-    Serial.println(summary->Count);
+    Serial.print("\tSound Count: ");
+    Serial.println(summary->SoundCount);
     Serial.print("\tTotal Sound Duration: ");
     Serial.println(summary->TotalSoundDuration);
+    Serial.print("\tSilence Count: ");
+    Serial.println(summary->SilenceCount);
     Serial.print("\tTotal Silence Duration: ");
     Serial.println(summary->TotalSilenceDuration);
     Serial.print("\tAverage Sound Duration: ");
