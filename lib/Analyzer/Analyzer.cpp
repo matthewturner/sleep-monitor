@@ -235,7 +235,7 @@ bool Analyzer::rhythmDetected(unsigned short status)
 
 void Analyzer::clear()
 {
-    for (short i = 0; i <= _index; i++)
+    for (short i = 0; i < SAMPLE_BUFFER_COUNT; i++)
     {
         _samples[i] = false;
     }

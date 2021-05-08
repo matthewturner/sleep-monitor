@@ -23,6 +23,8 @@ CommandReader _commandModule(&_streamReader);
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("Setting up...");
+
   pinMode(13, OUTPUT);
 
   _valveServo.attach(VALVE_PIN);
@@ -87,8 +89,8 @@ void loop()
   if (_analyzer.analysisRequired())
   {
     Serial.println("Analyzing...");
-    _analyzer.analyze(&_summary);
-    _reporter.reportOn(&_summary);
+    // _analyzer.analyze(&_summary);
+    // _reporter.reportOn(&_summary);
     _analyzer.clear();
 
     if (_summary.RhythmDetected)
