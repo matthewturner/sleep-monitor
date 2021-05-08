@@ -42,7 +42,7 @@ void Analyzer::analyze(Summary *summary)
         }
     }
 
-    if (_index != -1 && _index < SAMPLE_BUFFER_COUNT - 1)
+    if (_index != -1 && _index < MAX_SAMPLE_BUFFER_COUNT - 1)
     {
         unsigned short remainingSilenceDuration = elapsedDuration() - accountedDuration();
         if (remainingSilenceDuration > 0 && !withinSilence)
@@ -70,7 +70,7 @@ bool Analyzer::analysisRequired()
     {
         return false;
     }
-    if (_index >= SAMPLE_BUFFER_COUNT)
+    if (_index >= MAX_SAMPLE_BUFFER_COUNT)
     {
         return true;
     }
