@@ -146,29 +146,33 @@ void Analyzer::recordSound(unsigned long time)
 
 unsigned char Analyzer::index(unsigned short index)
 {
-    return index / SAMPLE_BUFFER_COUNT;
+    return index / (sizeof(unsigned long) * 8);
 }
 
 unsigned char Analyzer::subIndex(unsigned short index)
 {
-    return index % SAMPLE_BUFFER_COUNT;
+    return index % (sizeof(unsigned long) * 8);
 }
 
 bool Analyzer::sample(unsigned short i)
 {
-    bool bit = (_samples[index(i)] >> subIndex(i)) & 1U;
+    short ix = index(i);
+    short six = subIndex(i);
+    bool bit = (_samples[ix] >> six) & 1U;
     return bit;
 }
 
 void Analyzer::sample(unsigned short i, bool value)
 {
+    short ix = index(i);
+    short six = subIndex(i);
     if (value)
     {
-        _samples[index(i)] |= 1UL << subIndex(i);
+        _samples[ix] |= 1UL << six;
     }
     else
     {
-        _samples[index(i)] &= ~(1UL << subIndex(i));
+        _samples[ix] &= ~(1UL << six);
     }
 }
 
@@ -265,7 +269,7 @@ void Analyzer::clear()
 {
     for (unsigned short i = 0; i < SAMPLE_BUFFER_COUNT; i++)
     {
-        _samples[index(i)] = 0;
+        _samples[i] = 0;
     }
     _index = -1;
     _start = 0;

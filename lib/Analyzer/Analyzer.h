@@ -4,7 +4,8 @@
 #include <math.h>
 #include "TimeProvider.h"
 
-#define SAMPLE_BUFFER_COUNT 65
+const char SAMPLE_BUFFER_COUNT = 65;
+const short MAX_SAMPLE_BUFFER_COUNT = 2000;
 #define DEFAULT_DURATION_THRESHOLD 20000
 #define SLICE_DURATION 10
 #define SLICE_TO_DISPLAY 20

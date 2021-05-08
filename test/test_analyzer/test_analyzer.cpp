@@ -560,26 +560,41 @@ void test_silence_standard_deviation_exceeded(void)
     TEST_ASSERT_EQUAL(EXCESSIVE_SILENCE_DEVIATION, summary.Result);
 }
 
+void test_all_unset_apart_from(short exclude)
+{
+    for (unsigned short i = 0; i < MAX_SAMPLE_BUFFER_COUNT; i++)
+    {
+        if (i != exclude)
+        {
+            bool result = analyzer.sample(i);
+            analyzer.sample(i);
+            TEST_ASSERT_FALSE(result);
+        }
+    }
+}
+
+void test_all_unset(void)
+{
+    test_all_unset_apart_from(-1);
+}
+
 void test_initial_sample_unset(void)
 {
-    TEST_ASSERT_FALSE(analyzer.sample(0));
+    test_all_unset();
 }
 
 void test_initial_sample(void)
 {
     analyzer.sample(0, true);
     TEST_ASSERT_TRUE(analyzer.sample(0));
-}
-
-void test_second_sample_long_unset(void)
-{
-    TEST_ASSERT_FALSE(analyzer.sample(33));
+    test_all_unset_apart_from(0);
 }
 
 void test_second_sample_long(void)
 {
     analyzer.sample(33, true);
     TEST_ASSERT_TRUE(analyzer.sample(33));
+    test_all_unset_apart_from(33);
 }
 
 int main(int argc, char **argv)
@@ -634,7 +649,6 @@ int main(int argc, char **argv)
     RUN_TEST(test_silence_standard_deviation_exceeded);
     RUN_TEST(test_initial_sample_unset);
     RUN_TEST(test_initial_sample);
-    RUN_TEST(test_second_sample_long_unset);
     RUN_TEST(test_second_sample_long);
     UNITY_END();
 
