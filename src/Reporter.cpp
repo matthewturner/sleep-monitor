@@ -107,6 +107,24 @@ void Reporter::reportOn(Summary *summary)
     Serial.println();
 }
 
+void Reporter::reportOn(Analyzer *analyzer)
+{
+    Serial.println("***BEGIN SAMPLE***");
+    for (unsigned short i = 0; i < MAX_SAMPLE_BUFFER_COUNT; i++)
+    {
+        if (analyzer->sample(i))
+        {
+            Serial.print('^');
+        }
+        else
+        {
+            Serial.print('_');
+        }
+    }
+    Serial.println();
+    Serial.println("***END SAMPLE***");
+}
+
 void Reporter::reportOn(Pillow *pillow)
 {
     if (!_runtimeManager->run())
