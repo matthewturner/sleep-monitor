@@ -338,119 +338,6 @@ void test_average_sound_duration_threshold_exceeded(void)
     TEST_ASSERT_FALSE(summary.RhythmDetected);
 }
 
-void test_display_is_initialized(void)
-{
-    analyzer.analyze(&summary);
-
-    for (int i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_instant_sound(void)
-{
-    analyzer.recordSound(100);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    for (int i = 1; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_single_sound(void)
-{
-    analyzer.recordSound(100);
-    analyzer.recordSound(199);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    for (int i = 1; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_single_long_sound(void)
-{
-    analyzer.recordSound(100);
-    analyzer.recordSound(200);
-    analyzer.recordSound(301);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    TEST_ASSERT_EQUAL('|', summary.Display[1]);
-    for (int i = 2; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_single_long_sound_beyond_slice_duration(void)
-{
-    analyzer.recordSound(100);
-    analyzer.recordSound(301);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    TEST_ASSERT_EQUAL('|', summary.Display[1]);
-    for (int i = 2; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_multiple_long_sound_beyond_slice_duration(void)
-{
-    analyzer.recordSound(100);
-    analyzer.recordSound(301);
-    analyzer.recordSound(700);
-    analyzer.recordSound(1000);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    TEST_ASSERT_EQUAL('|', summary.Display[1]);
-    TEST_ASSERT_EQUAL('_', summary.Display[2]);
-    TEST_ASSERT_EQUAL('|', summary.Display[3]);
-    TEST_ASSERT_EQUAL('|', summary.Display[4]);
-
-    for (int i = 5; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
-void test_display_shows_multiple_long_sound_realistic(void)
-{
-    analyzer.recordSound(100);
-    analyzer.recordSound(301);
-    analyzer.recordSound(2100);
-    analyzer.recordSound(2200);
-    analyzer.recordSound(4150);
-    analyzer.recordSound(4380);
-    analyzer.analyze(&summary);
-
-    TEST_ASSERT_EQUAL('|', summary.Display[0]);
-    TEST_ASSERT_EQUAL('|', summary.Display[1]);
-    for (int i = 2; i <= 9; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-    TEST_ASSERT_EQUAL('|', summary.Display[10]);
-    for (int i = 11; i <= 19; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-    TEST_ASSERT_EQUAL('|', summary.Display[20]);
-    TEST_ASSERT_EQUAL('|', summary.Display[21]);
-    for (int i = 22; i < DISPLAY_LENGTH; i++)
-    {
-        TEST_ASSERT_EQUAL('_', summary.Display[i]);
-    }
-}
-
 void test_sound_zero_standard_deviation(void)
 {
     analyzer.recordSound(100);
@@ -632,13 +519,6 @@ int main(int argc, char **argv)
     RUN_TEST(test_average_silence_duration_multiple);
     RUN_TEST(test_average_silence_duration_threshold_exceeded);
     RUN_TEST(test_average_sound_duration_threshold_exceeded);
-    RUN_TEST(test_display_is_initialized);
-    RUN_TEST(test_display_shows_instant_sound);
-    RUN_TEST(test_display_shows_single_sound);
-    RUN_TEST(test_display_shows_single_long_sound);
-    RUN_TEST(test_display_shows_single_long_sound_beyond_slice_duration);
-    RUN_TEST(test_display_shows_multiple_long_sound_beyond_slice_duration);
-    RUN_TEST(test_display_shows_multiple_long_sound_realistic);
     RUN_TEST(test_sound_zero_standard_deviation);
     RUN_TEST(test_basic_sound_standard_deviation);
     RUN_TEST(test_multiple_sound_standard_deviation);

@@ -61,49 +61,6 @@ void Reporter::reportOn(Summary *summary)
         Serial.println("Unknown result");
         break;
     }
-
-    Serial.println("\tDisplay:");
-    Serial.print("\t");
-    for (short i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        if (summary->Display[i] == '|')
-        {
-            Serial.print('_');
-        }
-        else
-        {
-            Serial.print(" ");
-        }
-    }
-    Serial.println();
-    Serial.print("\t");
-    for (short i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        if (summary->Display[i] == '_')
-        {
-            Serial.print('_');
-        }
-        else
-        {
-            Serial.print(" ");
-        }
-    }
-    Serial.println();
-    unsigned long currentSlice = 0;
-    unsigned short time = 5;
-    for (short i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        currentSlice += summary->SliceDuration;
-        if ((currentSlice + summary->SliceDuration) % 5000 == 0)
-        {
-            Serial.print(time);
-            time += 5;
-        }
-        else
-        {
-            Serial.print(" ");
-        }
-    }
     Serial.println();
 }
 
