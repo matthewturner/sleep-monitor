@@ -8,7 +8,6 @@ const char SAMPLE_BUFFER_COUNT = 65;
 const short MAX_SAMPLE_BUFFER_COUNT = 2000;
 #define DEFAULT_DURATION_THRESHOLD 20000
 #define SLICE_DURATION 10
-#define SLICE_TO_DISPLAY 20
 #define MAX_SAMPLE_COUNT 100
 #define CONTIGUOUS_SOUND_THRESHOLD 300
 #define DEFAULT_MIN_SAMPLE_THRESHOLD 5
@@ -19,8 +18,6 @@ const short MAX_SAMPLE_BUFFER_COUNT = 2000;
 #define DEFAULT_MAX_SILENCE_DURATION_THRESHOLD 3000
 #define DEFAULT_MAX_SOUND_STANDARD_DEVIATION 300
 #define DEFAULT_MAX_SILENCE_STANDARD_DEVIATION 2000
-
-#define DISPLAY_LENGTH 100
 
 #define RHYTHM_DETECTED 0
 #define INSUFFICIENT_SAMPLE_COUNT 1
@@ -44,7 +41,6 @@ struct summary
     double SilenceStandardDeviation;
     unsigned char Result;
     bool RhythmDetected;
-    char Display[DISPLAY_LENGTH];
     unsigned short SliceDuration;
     unsigned short SoundDurations[MAX_SAMPLE_COUNT];
     unsigned short SilenceDurations[MAX_SAMPLE_COUNT];
@@ -94,7 +90,6 @@ private:
     double variance(unsigned short *samples, unsigned short size);
 
     unsigned short indexFor(unsigned long time);
-    unsigned short indexForDisplay(unsigned short sliceIndex);
     unsigned char index(unsigned short index);
     unsigned char subIndex(unsigned short index);
 

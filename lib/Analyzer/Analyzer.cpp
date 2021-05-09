@@ -25,8 +25,6 @@ void Analyzer::analyze(Summary *summary)
             }
             summary->TotalSoundDuration += SLICE_DURATION;
             summary->SoundDurations[summary->SoundCount - 1] += SLICE_DURATION;
-            unsigned short index = indexForDisplay(i);
-            summary->Display[index] = '|';
         }
         else
         {
@@ -109,15 +107,11 @@ void Analyzer::initialize(Summary *summary)
     summary->AverageSilenceDuration = 0;
     summary->TotalSoundDuration = 0;
     summary->TotalSilenceDuration = 0;
-    summary->SliceDuration = (short)(_durationThreshold / DISPLAY_LENGTH);
+    summary->SliceDuration = SLICE_DURATION;
     summary->SoundStandardDeviation = 0;
     summary->SilenceStandardDeviation = 0;
     summary->Result = UNKNOWN;
 
-    for (int i = 0; i < DISPLAY_LENGTH; i++)
-    {
-        summary->Display[i] = '_';
-    }
     for (short i = 0; i < MAX_SAMPLE_COUNT; i++)
     {
         summary->SoundDurations[i] = 0;
@@ -174,12 +168,6 @@ void Analyzer::sample(unsigned short i, bool value)
     {
         _samples[ix] &= ~(1UL << six);
     }
-}
-
-unsigned short Analyzer::indexForDisplay(unsigned short sliceIndex)
-{
-    unsigned short indexForDisplay = (unsigned short)(sliceIndex / SLICE_TO_DISPLAY);
-    return indexForDisplay;
 }
 
 unsigned short Analyzer::indexFor(unsigned long time)
