@@ -14,6 +14,8 @@ public:
 
     void reportOn(Summary *summary);
 
+    void reportOn(Analyzer *analyzer);
+
     void reportOn(Pillow *pillow);
 
 private:
