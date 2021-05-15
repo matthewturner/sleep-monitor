@@ -81,8 +81,24 @@ void test_previous_complex(void)
     TEST_ASSERT_EQUAL(0, compressor.compress(true));
     TEST_ASSERT_EQUAL(1, compressor.compress(false));
     TEST_ASSERT_EQUAL(0, compressor.end());
-    TEST_ASSERT_TRUE(compressor.previous());
+    TEST_ASSERT_FALSE(compressor.previous());
     TEST_ASSERT_FALSE(compressor.current());
+}
+
+void test_updates_previous_on_end_when_first_sample_is_false(void)
+{
+    TEST_ASSERT_EQUAL(0, compressor.compress(false));
+    TEST_ASSERT_EQUAL(0, compressor.end());
+    TEST_ASSERT_FALSE(compressor.previous());
+    TEST_ASSERT_FALSE(compressor.current());
+}
+
+void test_updates_previous_on_end_when_first_sample_is_true(void)
+{
+    TEST_ASSERT_EQUAL(0, compressor.compress(true));
+    TEST_ASSERT_EQUAL(0, compressor.end());
+    TEST_ASSERT_TRUE(compressor.previous());
+    TEST_ASSERT_TRUE(compressor.current());
 }
 
 int main(int argc, char **argv)
@@ -98,6 +114,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_end);
     RUN_TEST(test_previous_simple);
     RUN_TEST(test_previous_complex);
+    RUN_TEST(test_updates_previous_on_end_when_first_sample_is_false);
+    RUN_TEST(test_updates_previous_on_end_when_first_sample_is_true);
     UNITY_END();
 
     return 0;

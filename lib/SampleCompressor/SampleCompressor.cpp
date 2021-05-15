@@ -9,8 +9,8 @@ unsigned short SampleCompressor::compress(bool sample)
     }
     else
     {
-        short repeat = (_repeat == -1 ? 1 : _repeat);
-        _repeat = 1;
+        short repeat = (_repeat == -1 ? 0 : _repeat);
+        _repeat = 0;
         _previous = _current;
         _current = sample;
         return repeat;
@@ -19,6 +19,7 @@ unsigned short SampleCompressor::compress(bool sample)
 
 short SampleCompressor::end()
 {
+    _previous = _current;
     return _repeat;
 }
 
