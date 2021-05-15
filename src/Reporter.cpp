@@ -110,13 +110,3 @@ void Reporter::reportOn(Pillow *pillow)
         }
     }
 }
-
-void Reporter::begin()
-{
-    Serial.println("{");
-}
-
-void Reporter::end()
-{
-    Serial.println("{");
-}

@@ -18,10 +18,6 @@ public:
 
     void reportOn(Pillow *pillow);
 
-    void begin();
-
-    void end();
-
 private:
     RuntimeManager *_runtimeManager;
 };
