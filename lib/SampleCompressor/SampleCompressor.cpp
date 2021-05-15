@@ -7,14 +7,12 @@ unsigned short SampleCompressor::compress(bool sample)
         _repeat++;
         return 0;
     }
-    else
-    {
-        short repeat = (_repeat == -1 ? 0 : _repeat);
-        _repeat = 0;
-        _previous = _current;
-        _current = sample;
-        return repeat;
-    }
+
+    short repeat = (_repeat == -1 ? 0 : _repeat);
+    _repeat = 0;
+    _previous = _current;
+    _current = sample;
+    return repeat;
 }
 
 short SampleCompressor::end()
