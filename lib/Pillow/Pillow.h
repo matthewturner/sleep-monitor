@@ -5,8 +5,8 @@
 #include "Stepper.h"
 #include "IValve.h"
 
-#define DEFLATING 1
-#define INFLATING -1
+#define DEFLATING -1
+#define INFLATING 1
 #define STOPPED 0
 
 class Pillow

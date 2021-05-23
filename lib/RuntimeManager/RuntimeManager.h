@@ -5,7 +5,7 @@
 
 #define MINUTES (unsigned long)60 * 1000
 
-#define DEFAULT_MAX_RUNTIME 20000
+#define DEFAULT_MAX_RUNTIME 30000
 #define DEFAULT_MIN_WAIT_TIME 10000
 
 class RuntimeManager

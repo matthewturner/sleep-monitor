@@ -8,5 +8,5 @@ HardwareEndStop::HardwareEndStop(short pin)
 
 bool HardwareEndStop::read()
 {
-    return digitalRead(_pin) == HIGH;
+    return digitalRead(_pin) == LOW;
 }
